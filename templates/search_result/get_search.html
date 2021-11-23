@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    {#    网站图形标需要修改#}
+    <link rel="icon" href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/favicon.ico">
+    <link rel="canonical" href="https://getbootstrap.com/docs/3.4/examples/dashboard/">
+
+    <title>抓取搜索关键词</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/css/ie10-viewport-bug-workaround.css"
+          rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/examples/dashboard/dashboard.css"
+          rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/js/ie8-responsive-file-warning.js"></script>
+    <![endif]-->
+    <script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/js/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ url_for('user_bp.index') }}">亚马逊数据分析平台</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li style="margin-top: 14px; color: #8a6d3b">欢迎
+                    <mark style="background-color: #222222;color: #8a6d3b">{{ user.username }}</mark>
+                </li>
+                <li><a href="{{ url_for('user_bp.logout') }}">退出</a></li>
+            </ul>
+            {#            搜索结果要往哪里提交？#}
+            <form class="navbar-form navbar-right">
+                <input type="text" class="form-control" placeholder="搜索...">
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+                <li><a href="{{ url_for('user_bp.index') }}">概 述 <span class="sr-only">(current)</span></a></li>
+                <li><a href="#">广告分析</a></li>
+                <li><a href="#">关键词查询</a></li>
+                <li><a href="{{ url_for('cate_bp.get_cate') }}">亚马逊目录</a></li>
+            </ul>
+            <ul class="nav nav-sidebar">
+                <li><a href="{{ url_for('sp_bp.dp') }}">亚马逊单品数据获取</a></li>
+                <li><a href="{{ url_for('sp_bp.get_review') }}">亚马逊单品评价获取</a></li>
+                <li class="active"><a href="{{ url_for('sr_bp.add_search') }}">亚马逊关键词搜索获取</a></li>
+            </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <h1 class="page-header" style="text-align: center">抓取关键词搜索信息</h1>
+        </div>
+
+
+        <form action="{{ url_for('sr_bp.get_search') }}" id="form111" method="POST"
+              style="text-align: center;margin-left: 10%;margin-top: 20%">
+            <select name="keywords" class="" style="height: 40px" id="keyword" >
+                <option value="">请选择关键词</option>
+            </select><br>
+            <select name="markets" id="market_sub" style="height: 40px" onchange="mkp_sel()">
+                {# 市场部分不采用固定的值，而是从数据库中动态加载 #}
+                <option value="">请选择市场</option>
+                <option value="us">us</option>
+                <option value="de">de</option>
+                <option value="uk">uk</option>
+                <option value="fr">fr</option>
+                <option value="it">it</option>
+                <option value="es">es</option>
+                <option value="jp">jp</option>
+                <option value="au">au</option>
+            </select><br>
+            <input type="submit" onclick="sumdata()" id="sub" class="btn btn-success" style="width: 100px;height: 40px">
+        </form>
+
+    </div>
+</div>
+
+<script src="/static/js/jquery-1.8.3.min.js"></script>
+<script>
+
+
+    function mkp_sel() {
+        let mkp = $('#market_sub').val()   //两个option选项，通过选择其中一个改变另外一个的值，需要使用onchange事件，再通过js定义该事件
+
+        $.ajax({
+            type: 'post',
+            url: "{{url_for('sr_bp.load_keyword')}}",
+            dataType: 'json',
+            data: {'mkp': mkp},
+            async: true,
+            success: function (data) {
+                console.log(data);
+                if (data) {
+                    $('#keyword').empty();
+                    $('#keyword').append("<option value=''>请选择关键词</option>");
+                    for (var i = 0; i < data.length; i++) {
+                        $('#keyword').append("<option name='search_keyword' value='" + data[i].keyword + "'>" + data[i].keyword + '</option>');
+                    }
+                }
+            }
+
+        })
+    }
+
+
+</script>
+
+</body>
+</html>

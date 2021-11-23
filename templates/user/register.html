@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+
+<head>
+    <meta charset="UTF-8">
+    {% block title %}
+    用户注册
+    {% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
+    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+</head>
+
+{% block styles %}
+    {{ super() }}
+    <style>
+        #container {
+            width: 1000px;
+            margin: 0 auto;
+            height: 700px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        #wrapper {
+            display: table;
+            width: 1000px;
+            height: 650px;
+            margin: 0 auto
+        }
+
+        #cell {
+            display: table-cell;
+            vertical-align: middle;
+        }
+    </style>
+{% endblock %}
+
+{% block navbar %}
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{{ url_for('user_bp.index') }}">Brand</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li class="active" style="font-size: 18px; text-align: center; line-height: 50px">欢 迎 注 册 <span
+                            class="sr-only">(current)</span></li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{{ url_for('user_bp.login') }}">登 录</a></li>
+                    <li><a href="{{ url_for('user_bp.register') }}">注 册</a></li>
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+{% endblock %}
+
+
+{% block content %}
+    <div id="wrapper">
+        {#    <h1 style="text-align: center; height: 100px">用户注册</h1>#}
+        <div id="cell">
+            <form class="form-horizontal" style="line-height: 10px;" action="{{ url_for('user_bp.register') }}"
+                  method="post">
+                <div class="form-group">
+                    <label for="inputUsernames" class="col-sm-4 control-label">用户名</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="inputUsername" placeholder="用户名"
+                               name="username"><span> </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword3" class="col-sm-4 control-label">密码</label>
+                    <div class="col-sm-4">
+                        <input type="password" class="form-control" id="inputPassword3" placeholder="密码"
+                               name="password">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputrePassword3" class="col-sm-4 control-label">确认密码</label>
+                    <div class="col-sm-4">
+                        <input type="password" class="form-control" id="inputrePassword3" placeholder="确认密码"
+                               name="repassword">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputNickname" class="col-sm-4 control-label">昵称</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="inputNickname" placeholder="昵称" name="nickname">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-offset-4 col-sm-4">
+                        <button type="submit" class="btn btn-block">注 册</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        {#alert('页面生效')#}
+        $('#inputUsername').blur(function () {
+            alert('生效')
+            let username = $(this).val();
+            let span_ele = $(this).next('span');
+            $.get('{{ url_for('user_bp.check_username') }}', {username: username}, function (data) {
+                console.log()
+                if (data.code != 200) {
+                    span_ele.css({'color': 'red', 'font-size': '12px'});
+                    span_ele.text(data.msg);
+                }
+            })
+
+
+            {#location.href = '/user/check_username?username=' + username#}
+
+
+        })
+    </script>
+
+{% endblock %}

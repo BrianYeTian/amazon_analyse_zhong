@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    {#    网站图形标需要修改#}
+    <link rel="icon" href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/favicon.ico">
+    <link rel="canonical" href="https://getbootstrap.com/docs/3.4/examples/dashboard/">
+
+    <title>产品信息查看</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/css/ie10-viewport-bug-workaround.css"
+          rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/examples/dashboard/dashboard.css"
+          rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/js/ie8-responsive-file-warning.js"></script>
+    <![endif]-->
+    <script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/js/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ url_for('user_bp.index') }}">亚马逊数据分析平台</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li style="margin-top: 14px; color: #8a6d3b">欢迎
+                    <mark style="background-color: #222222;color: #8a6d3b">{{ user.username }}</mark>
+                </li>
+                <li><a href="{{ url_for('user_bp.logout') }}">退出</a></li>
+            </ul>
+            {#            搜索结果要往哪里提交？#}
+            <form class="navbar-form navbar-right">
+                <input type="text" class="form-control" placeholder="搜索...">
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+                <li><a href="{{ url_for('user_bp.index') }}">概 述 <span
+                        class="sr-only">(current)</span></a></li>
+                <li><a href="#">广告分析</a></li>
+                <li><a href="#">关键词查询</a></li>
+                <li><a href="{{ url_for('cate_bp.get_cate') }}">亚马逊目录</a></li>
+            </ul>
+            <ul class="nav nav-sidebar">
+                <li class="active"><a href="{{ url_for('sp_bp.dp') }}">亚马逊单品数据获取</a></li>
+                <li><a href="{{ url_for('sp_bp.get_review') }}">亚马逊单品评价获取</a></li>
+                <li><a href="{{ url_for('sr_bp.add_search') }}">亚马逊关键词搜索获取</a></li>
+            </ul>
+        </div>
+
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <h1 class="page-header" style="text-align: center">产品信息查询</h1>
+            {% if pd_list %}
+                <h4 style="margin-left: 2%;margin-top: 10px">当前共计：<span
+                        style="color: red;">{{ pd_list|length }}</span> 条记录</h4>
+            {% elif pd_lists %}
+                <h4 style="margin-left: 2%;margin-top: 10px">当前共计：<span
+                        style="color: red">{{ pd_lists|length }}</span> 条记录</h4>
+            {% endif %}
+
+            {#            {% if products %}#}
+            {#                <h5 style="margin-left: 2%">德国市场：<span>{{ de }}个</span></h5>#}
+            {#                <h5 style="margin-left: 2%">美国市场：<span>{{ us }}个</span></h5>#}
+            {#                <h5 style="margin-left: 2%">其他市场：<span>{{ other }}个</span></h5>#}
+            {#            {% endif %}#}
+
+            <div class="btn-group" style="margin-left: 25px;margin-top: 20px">
+                <form action="{{ url_for('sp_bp.query_all') }}" method="post">
+                    <button type="submit" class="btn btn-info" style="width: 200px">查 询 所 有 产 品</button>
+                </form>
+            </div>
+            <br>
+            <form action="{{ url_for('sp_bp.download') }}" id="searchForm" method="post">
+                <input type="hidden" name="id_lst" id="id_list">
+                <button style="margin-top: 35px;margin-left: 25px;background-color: #72c5fd;border: none;border-radius: 3px;width: 200px;height: 35px"
+                        id="export_pd" type="button" onclick=exp()>导 出 当 前 记 录
+                </button>
+            </form>
+
+            <div class="form-bottom" style="width: 200px;margin-left: 900px;margin-top: -135px">
+                <form method="post" role="form" action="{{ url_for('sp_bp.query_by') }}">
+                    <div class="form-group">
+                        <label class="sr-only" for="form-username" id="mkp">市场名</label>
+                        <input type="text" name="mkp" placeholder="请输入市场..." class="form-username form-control"
+                               id="form-username" style="text-align: center;">
+                    </div>
+                    <div class="form-group">
+                        <label class="sr-only" for="form-password">asin</label>
+                        <input type="text" name="asin" placeholder="请输入asin..." class="form-password form-control"
+                               id="form-password" style="text-align: center;">
+                    </div>
+                    <button type="submit" class="btn btn-block">筛 选</button>
+                </form>
+            </div>
+
+
+            <div class="table-responsive">
+                <table class="table table-striped" style="margin-top: 5%;margin-left: 20px" id="pd_table_list" data-pagination="true" data-side-pagination="client" datapagesize="10">
+                    <tr>
+                        <th style="text-align: center">序号</th>
+                        <th style="text-align: center">
+                            Asin
+                        </th>
+                        <th style="text-align: center">市场</th>
+                        <th style="text-align: center">产品名</th>
+                        <th style="text-align: center">售价</th>
+                        <th style="text-align: center">评论数量</th>
+                        <th style="text-align: center">星级</th>
+                        <th style="text-align: center">排名</th>
+                        <th style="text-align: center">目录</th>
+                        <th style="text-align: center">库存</th>
+                        <th style="text-align: center">抓取时间</th>
+                    </tr>
+
+                    {% if pd_list %}
+
+                        {% for pd in pd_list %}
+                            <tr id="pd_tr">
+                                <td class="hidden" id="pd_id">{{ pd.id }}</td>
+                                <td style="text-align: center">{{ loop.index }}</td>
+                                <td style="text-align: center">{{ pd.asin }}</td>
+                                <td style="text-align: center">{{ pd.pd_info.market }}</td>
+                                <td style="text-align: center;max-width: 300px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap">{{ pd.pd_info.goods_name }}</td>
+                                <td style="text-align: center">{{ pd.price }}</td>
+                                <td style="text-align: center">{{ pd.rating_num }}</td>
+                                <td style="text-align: center">{{ pd.rating }}</td>
+                                <td style="text-align: center">{{ pd.rank }}</td>
+                                <td style="text-align: center;max-width: 150px">{{ pd.cate }}</td>
+                                <td style="text-align: center">{{ pd.inventory }}</td>
+                                <td style="text-align: center">{{ pd.update_date }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td style="color: rgba(192,192,192,0.5); text-align: center">无数据</td>
+                            <td style="color: rgba(192,192,192,0.5); text-align: center">无数据</td>
+                            <td style="color: rgba(192,192,192,0.5); text-align: center">无数据</td>
+                            <td style="color: rgba(192,192,192,0.5); text-align: center">无数据</td>
+                            <td style="color: rgba(192,192,192,0.5); text-align: center">无数据</td>
+                            <td style="color: rgba(192,192,192,0.5); text-align: center">无数据</td>
+                            <td style="color: rgba(192,192,192,0.5); text-align: center">无数据</td>
+                            <td style="color: rgba(192,192,192,0.5); text-align: center">无数据</td>
+                        </tr>
+                    {% endif %}
+
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/jquery-1.8.3.min.js"></script>
+<script>
+    $('#mkp_submit').click(function () {
+        let mkp = $("input[id='mkp']");
+        let asin = $("input[id='asin']")
+        location.href = '/query_all?asin=' + asin + '&mkp=' + mkp
+    })
+
+    function exp(){
+        let pd_id= [];
+        $('#pd_table_list').each(function () {
+            for (let i=1;i<$(this).find("tr").length; i++){
+                //let sValue1 = document.getElementById('pd_id').innerHTML;
+                let sValue1=$(this).find('tr').eq(i).find('td').eq(0).html();
+                alert(sValue1)
+                pd_id.push(sValue1);
+            }
+            //alert(pd_id);
+
+            if (pd_id.length==0){
+                alert('无数据可导出');
+                return;
+            }
+            //$("#searchForm").attr("action","{{ url_for('sp_bp.download') }}");
+            $('#id_list').val(pd_id);
+            $("#searchForm").submit();
+            //$("#searchForm").attr("action","/springrain-erp/a/amazoninfo/salesReprots/list2");
+        })
+    }
+
+    //获取当前页面上所有记录在数据库中对应的id；通过ajax无法传递字节流，所以用上面的方式
+    $('#export_pds').click(function () {
+        let pd_id= [];
+        $('#pd_table_list').each(function () {
+            for (let i=1;i<$(this).find("tr").length; i++){
+                //let sValue1 = document.getElementById('pd_id').innerHTML;
+                let sValue1=$(this).find('tr').eq(i).find('td').eq(0).html();
+                //alert(sValue1)
+                pd_id.push(sValue1);
+            }
+            //alert(pd_id);
+
+            if (pd_id.length==0){
+                alert('无数据可导出');
+                return;
+            }
+
+
+
+            //ajax传给后端
+
+        });
+    })
+
+    //分頁顯示
+    //$(function () {
+        var $table = $("table");
+        var currentPage = 0; //当前页默认值为0
+        var pageSize = 12; //每一页显示的数目
+        $table.bind('paging', function () {
+            $table.find('tbody tr').hide().slice(currentPage * pageSize, (currentPage + 1) * pageSize).show();
+        });
+        var sumRows = $table.find('tbody tr').length;
+        var sumPages = Math.ceil(sumRows / pageSize); //总页数
+
+        var $pager = $('<div class="page"></div>');  //新建div，放入a标签,显示底部分页码
+        for (var pageIndex = 0; pageIndex < sumPages; pageIndex++) {
+            $('<a href="#" id="pageStyle" onclick="changCss(this)"><span>' + (pageIndex + 1) + '</span></a>').bind("click", { "newPage": pageIndex }, function (event) {
+                currentPage = event.data["newPage"];
+                $table.trigger("paging");
+                //触发分页函数
+            }).appendTo($pager);
+            $pager.append(" ");
+        }
+        $pager.insertAfter($table);
+        $table.trigger("paging");
+
+        //默认第一页的a标签效果
+        var $pagess = $('#pageStyle');
+        $pagess[0].style.backgroundColor = "#006B00";
+        $pagess[0].style.color = "#ffffff";
+    });
+
+    //a链接点击变色，再点其他回复原色
+    function changCss(obj) {
+        var arr = document.getElementsByTagName("a");
+        for (var i = 0; i < arr.length; i++) {
+            if (obj == arr[i]) {       //当前页样式
+                obj.style.backgroundColor = "#006B00";
+                obj.style.color = "#ffffff";
+            }
+            else {
+                arr[i].style.color = "";
+                arr[i].style.backgroundColor = "";
+            }
+        }
+    }
+
+
+</script>
+
+</body>
+
+</html>
+
+

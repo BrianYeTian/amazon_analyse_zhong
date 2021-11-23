@@ -1,0 +1,8 @@
+# 先初始化当前的数据库环境
+python3 manage.py db init
+
+# 把当前模型迁移到文件夹
+python3 manage.py db migrate
+
+# 把模型迁移到数据库中
+python3 manage.py db upgrade

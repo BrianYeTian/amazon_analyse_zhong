@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+{#    网站图形标需要修改#}
+    <link rel="icon" href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/favicon.ico">
+    <link rel="canonical" href="https://getbootstrap.com/docs/3.4/examples/dashboard/">
+
+    <title>Dashboard Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/examples/dashboard/dashboard.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/js/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="{{url_for('user_bp.index')}}">亚马逊数据分析平台</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li style="margin-top: 14px; color: #8a6d3b">欢迎 <mark style="background-color: #222222;color: #8a6d3b">{{ user.username }}</mark></li>
+            <li><a href="{{ url_for('user_bp.logout') }}">退出</a></li>
+          </ul>
+{#            搜索结果要往哪里提交？#}
+          <form class="navbar-form navbar-right">
+            <input type="text" class="form-control" placeholder="搜索...">
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <li class="active"><a href="{{url_for('user_bp.index')}}">概 述 <span class="sr-only">(current)</span></a></li>
+            <li><a href="#">广告分析</a></li>
+            <li><a href="#">关键词查询</a></li>
+            <li><a href="{{ url_for('cate_bp.get_cate') }}">亚马逊目录</a></li>
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li><a href="{{ url_for('sp_bp.dp') }}">亚马逊单品数据获取</a></li>
+            <li><a href="{{ url_for('sp_bp.get_review') }}">亚马逊单品评价获取</a></li>
+            <li><a href="{{ url_for('sr_bp.add_search') }}">亚马逊关键词搜索获取</a></li>
+          </ul>
+        </div>
+
+        <div class="tips" style="margin-top: 8%">
+            <h3 style="margin-left: 35%">用前须知：</h3><br>
+            <h4 style="margin-left: 35%">1. 目前只开发了跟踪销量的功能，其他功能抽时间慢慢做</h4>
+            <h4 style="margin-left: 35%;margin-top: 1.5%">2. 跟踪销量功能的逻辑为获取单个产品每日的库存数据，要获得比较具有参考意义的数据，建议时间跨度长一些</h4>
+            <h4 style="margin-left: 35%;margin-top: 1.5%">3. 同时会跟踪排名、价格等信息</h4>
+            <h4 style="margin-left: 35%;margin-top: 1.5%;color: red">4. UK市场需要登陆才能更改邮编，此版本暂时不支持模拟登陆。不建议跟踪UK市场</h4>
+            <h4 style="margin-left: 35%;margin-top: 1.5%">5. 使用指南：
+                <h5 style="margin-left: 36.5%;margin-top: 0.8%">a. 首先添加要跟踪的产品，路径：亚马逊单品页面 > 继续添加产品 > 输入链接并提交</h5>
+                <h5 style="margin-left: 36.5%;margin-top: 0.8%">b. 返回到产品信息汇总页面，可以批量提交，也可以单个产品提交。由于亚马逊反爬技术以及受网速影响，爬取的速度会比较慢</h5>
+                <h5 style="margin-left: 36.5%;margin-top: 0.8%">c. 爬取完成后，点击“查看”，可看到该产品的详细数据</h5>
+            </h4>
+
+
+        </div>
+
+{#        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">#}
+{#          <h1 class="page-header">Dashboard</h1>#}
+
+{#          <div class="row placeholders">#}
+{#            <div class="col-xs-6 col-sm-3 placeholder">#}
+{#              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">#}
+{#              <h4>Label</h4>#}
+{#              <span class="text-muted">Something else</span>#}
+{#            </div>#}
+{#            <div class="col-xs-6 col-sm-3 placeholder">#}
+{#              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">#}
+{#              <h4>Label</h4>#}
+{#              <span class="text-muted">Something else</span>#}
+{#            </div>#}
+{#            <div class="col-xs-6 col-sm-3 placeholder">#}
+{#              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">#}
+{#              <h4>Label</h4>#}
+{#              <span class="text-muted">Something else</span>#}
+{#            </div>#}
+{#            <div class="col-xs-6 col-sm-3 placeholder">#}
+{#              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">#}
+{#              <h4>Label</h4>#}
+{#              <span class="text-muted">Something else</span>#}
+{#            </div>#}
+{#          </div>#}
+{##}
+{#          <h2 class="sub-header">Section title</h2>#}
+{#          <div class="table-responsive">#}
+{#            <table class="table table-striped">#}
+{#              <thead>#}
+{#                <tr>#}
+{#                  <th>#</th>#}
+{#                  <th>Header</th>#}
+{#                  <th>Header</th>#}
+{#                  <th>Header</th>#}
+{#                  <th>Header</th>#}
+{#                </tr>#}
+{#              </thead>#}
+{#              <tbody>#}
+{#                <tr>#}
+{#                  <td>1,001</td>#}
+{#                  <td>Lorem</td>#}
+{#                  <td>ipsum</td>#}
+{#                  <td>dolor</td>#}
+{#                  <td>sit</td>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                  <td>1,002</td>#}
+{#                  <td>amet</td>#}
+{#                  <td>consectetur</td>#}
+{#                  <td>adipiscing</td>#}
+{#                  <td>elit</td>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                  <td>1,003</td>#}
+{#                  <td>Integer</td>#}
+{#                  <td>nec</td>#}
+{#                  <td>odio</td>#}
+{#                  <td>Praesent</td>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                  <td>1,003</td>#}
+{#                  <td>libero</td>#}
+{#                  <td>Sed</td>#}
+{#                  <td>cursus</td>#}
+{#                  <td>ante</td>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                  <td>1,004</td>#}
+{#                  <td>dapibus</td>#}
+{#                  <td>diam</td>#}
+{#                  <td>Sed</td>#}
+{#                  <td>nisi</td>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                  <td>1,005</td>#}
+{#                  <td>Nulla</td>#}
+{#                  <td>quis</td>#}
+{#                  <td>sem</td>#}
+{#                  <td>at</td>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                  <td>1,006</td>#}
+{#                  <td>nibh</td>#}
+{#                  <td>elementum</td>#}
+{#                  <td>imperdiet</td>#}
+{#                  <td>Duis</td>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                  <td>1,007</td>#}
+{#                  <td>sagittis</td>#}
+{#                  <td>ipsum</td>#}
+{#                  <td>Praesent</td>#}
+{#                  <td>mauris</td>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                  <td>1,008</td>#}
+{#                  <td>Fusce</td>#}
+{#                  <td>nec</td>#}
+{#                  <td>tellus</td>#}
+{#                  <td>sed</td>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                  <td>1,009</td>#}
+{#                  <td>augue</td>#}
+{#                  <td>semper</td>#}
+{#                  <td>porta</td>#}
+{#                  <td>Mauris</td>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                  <td>1,010</td>#}
+{#                  <td>massa</td>#}
+{#                  <td>Vestibulum</td>#}
+{#                  <td>lacinia</td>#}
+{#                  <td>arcu</td>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                  <td>1,011</td>#}
+{#                  <td>eget</td>#}
+{#                  <td>nulla</td>#}
+{#                  <td>Class</td>#}
+{#                  <td>aptent</td>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                  <td>1,012</td>#}
+{#                  <td>taciti</td>#}
+{#                  <td>sociosqu</td>#}
+{#                  <td>ad</td>#}
+{#                  <td>litora</td>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                  <td>1,013</td>#}
+{#                  <td>torquent</td>#}
+{#                  <td>per</td>#}
+{#                  <td>conubia</td>#}
+{#                  <td>nostra</td>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                  <td>1,014</td>#}
+{#                  <td>per</td>#}
+{#                  <td>inceptos</td>#}
+{#                  <td>himenaeos</td>#}
+{#                  <td>Curabitur</td>#}
+{#                </tr>#}
+{#                <tr>#}
+{#                  <td>1,015</td>#}
+{#                  <td>sodales</td>#}
+{#                  <td>ligula</td>#}
+{#                  <td>in</td>#}
+{#                  <td>libero</td>#}
+{#                </tr>#}
+{#              </tbody>#}
+{#            </table>#}
+{#          </div>#}
+{#        </div>#}
+{#      </div>#}
+{#    </div>#}
+{##}
+{#    <!-- Bootstrap core JavaScript#}
+{#    ================================================== -->#}
+{#    <!-- Placed at the end of the document so the pages load faster -->#}
+{#    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>#}
+{#    <script>window.jQuery || document.write('<script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/js/vendor/jquery.min.js"><\/script>')</script>#}
+{#    <script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/dist/js/bootstrap.min.js"></script>#}
+{#    <!-- Just to make our placeholder images work. Don't actually copy the next line! -->#}
+{#    <script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/js/vendor/holder.min.js"></script>#}
+{#    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->#}
+{#    <script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/js/ie10-viewport-bug-workaround.js"></script>#}
+  </body>
+</html>

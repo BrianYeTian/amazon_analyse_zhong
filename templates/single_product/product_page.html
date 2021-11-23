@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    {#    网站图形标需要修改#}
+    <link rel="icon" href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/favicon.ico">
+    <link rel="canonical" href="https://getbootstrap.com/docs/3.4/examples/dashboard/">
+
+    <title>获取评价</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/css/ie10-viewport-bug-workaround.css"
+          rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/examples/dashboard/dashboard.css"
+          rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/js/ie8-responsive-file-warning.js"></script>
+    <![endif]-->
+    <script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/js/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ url_for('user_bp.index') }}">亚马逊数据分析平台</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li style="margin-top: 14px; color: #8a6d3b">欢迎
+                    <mark style="background-color: #222222;color: #8a6d3b">{{ user.username }}</mark>
+                </li>
+                <li><a href="{{ url_for('user_bp.logout') }}">退出</a></li>
+            </ul>
+            {#            搜索结果要往哪里提交？#}
+            <form class="navbar-form navbar-right">
+                <input type="text" class="form-control" placeholder="搜索...">
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+                <li><a href="{{ url_for('user_bp.index') }}">概 述 </a></li>
+                <li><a href="#">广告分析</a></li>
+                <li><a href="#">关键词查询</a></li>
+                <li><a href="{{ url_for('cate_bp.get_cate') }}">亚马逊目录</a></li>
+            </ul>
+            <ul class="nav nav-sidebar">
+                <li class="active"><a href="{{ url_for('sp_bp.dp') }}">亚马逊单品数据获取</a></li>
+                <li><a href="{{ url_for('sp_bp.get_review') }}">亚马逊单品评价获取</a></li>
+                <li><a href="">亚马逊关键词搜索获取</a></li>
+            </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <h1 class="page-header" style="text-align: center">产品信息汇总</h1>
+            <h4 style="margin-left: 2%;margin-top: 10px" id="count_num"></h4>
+
+            <h4 style="margin-left: 850px;margin-top: -20px"><a href="{{ url_for('sp_bp.add') }}">继续添加产品</a></h4>
+
+            <div class="filterasin" style="margin-left: 850px;margin-top: 20px">
+{#                <form>#}
+                    <select name="mkp" id="mkp" style="height:25.5px;">
+                        <option value="">请选择市场</option>
+                        <option value="us">us</option>
+                        <option value="de">de</option>
+                        <option value="uk">uk</option>
+                        <option value="fr">fr</option>
+                        <option value="it">it</option>
+                        <option value="es">es</option>
+                        <option value="jp">jp</option>
+                        <option value="all">all</option>
+                    </select>
+                    <input type="submit" value="筛 选" style="margin-left: 25px;width: 100px">
+{#                </form>#}
+            </div>
+            <div style="margin-top: -20px; margin-left: 5px">
+                <input type="button" class="u_button" value="反  选" id="btnCheckedRev"/>
+                <input type="button" class="u_button" value="批量爬取" id="btnSubmit"/>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-striped" id="list-content" style="margin-top: 2.5%;margin-left: 20px">
+                    <tr>
+                        <td style="text-align: center"><input type="checkbox" id="checkAll"></td>
+                        <td style="text-align: center">Asin</td>
+                        <td style="text-align: center">市场</td>
+                        <th style="text-align: center">产品名</th>
+{#                        <th style="text-align: center">链接</th>#}
+                        <th style="text-align: center">添加时间</th>
+                        <th style="text-align: center">备注</th>
+                        <th style="text-align: center">操作</th>
+
+                    </tr>
+
+                    <tbody id="tbody" class="tbody">
+
+                    </tbody>
+
+                </table>
+{#                <div class="list-menu" id="list-menu"></div>#}
+
+                <style>
+                    .u_button{
+                        margin-left: 18px;
+                        width: 100px;
+                        margin-top: -80px;
+                    }
+                </style>
+                <div id="page" class="page">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td></td>
+                                <td class="td_body">
+                                    <ul>
+                                        <li>
+                                            <a href="javascript:;" onclick="first_page_click()"><span class="glyphicon glyphicon-backward"></span></a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:;"  onclick="left_page_click()"><span class="glyphicon glyphicon-step-backward"></span></a>
+                                        </li>
+                                        <li>
+                                            <p id="pno"></p>
+                                        </li>
+                                        <li>
+                                            <p id="all_page"></p>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:;" onclick="right_page_click()"><span class="glyphicon glyphicon-step-forward"></span></a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:;"  onclick="end_page_click()"><span class="glyphicon glyphicon-forward"></span></a>
+                                        </li>
+                                        <li>
+                                            <select id="jumpPage">
+                                                <option>10</option>
+                                                <option>20</option>
+                                                <option>30</option>
+                                                <option>all</option>
+                                            </select>
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <p id="tempStr"></p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/jquery-1.8.3.min.js"></script>
+
+<script>
+    function query(asin) {
+        location.href = '/query?asin=' + asin
+    }
+    function get(asin) {
+        location.href = '/trace_pds?asin=' + asin
+        alert('正在爬取数据，请稍候......')
+    }
+
+
+
+
+    $(document).ready(function()
+    {
+        //全选
+        $("#checkAll").click(function(){
+            $("[name=checkItem]:checkbox").prop("checked",this.checked);
+        });
+
+        //复选框组的联动效果
+        $("[name=checkItem]:checkbox").click(function(){
+            var flag = true;
+            $("[name=checkItem]:checkbox").each(function(){
+                if(!this.checked)
+                {
+                    flag = false;
+                }
+            });
+            $("#checkAll").prop("checked",flag);
+        });
+
+        //反选
+        $("#btnCheckedRev").click(function(){
+            $("[name=checkItem]:checkbox").each(function(){
+                this.checked = !this.checked;
+            });
+        });
+
+        //提交
+        $("#btnSubmit").click(function(){
+            var idArray = new Array(); //用户ID数组
+            $("[name=checkItem]:checkbox:checked").each(function(){
+                idArray.push($(this).val());
+            });
+            if(idArray.length==0)
+            {
+                alert("请选择至少一个产品！");
+                return;
+            }
+
+            if (!confirm("确定提交记录吗？")) {
+                return;
+            }
+
+            //执行Ajax请求
+            $.ajax({
+                type: "POST",
+                url: "{{ url_for('sp_bp.trace_pds') }}",
+                data:{
+                    asins:JSON.stringify(idArray)
+                },
+                success: function(result) {
+                    alert('抓取完成，请点击"查看"查询详细信息')
+                }
+            });
+        });
+    });
+
+    var length;         //子数据的个数
+    var currentPage;    //当前页数
+    var totalPage;      //总页数
+    var pageSize;       //每页显示的json数据个数
+    var listbox = 'list-content'
+    /*加载页面时运行*/
+
+    $(function () {
+     //进行获取json数据
+        $.ajax({
+            type:"post",
+            url:'{{ url_for('sp_bp.dp') }}',
+            dataType:"json",
+            success:function (data) {
+                //alert(data.values)
+                //console.log(data.values);
+                length=Object.keys(data.values).length;
+                //console.log(length);
+                //向表格中添加数据
+                addTable(data);
+                $('#count_num').append(
+                    "您当前已经添加的产品数量为："+"<span style='color: red'>"+length+"个</span>"
+                );
+            },
+            error:function (data) {
+                alert("获取数据失败！");
+            }
+
+        });
+
+
+        function addTable(data) {
+            $.each(data,function (i,item) {
+                //进行二次遍历json数据
+                $.each(item,function (j,item1) {
+                    //向表格中动态添加数据
+                    $("#tbody").append(
+                        "<tr>"+
+                            "<td>"+"<input type='checkbox' name='checkItem' value='"+item1.id+"'>"+"</td>"+
+                            "<td><a href="+item1.url+" target='_blank'>"+item1.asin+"</a></td>"+
+                            "<td>"+item1.market+"</td>"+
+                            "<td style='text-align: center; max-width: 200px; overflow:hidden; text-overflow: ellipsis; white-space: nowrap'>"+item1.goods_name+"</td>"+
+                            "<td>"+item1.time+"</td>"+
+                            "<td>"+"</td>"+
+                            "<td>"+"<a href='javascript:;' onclick=query("+item1.id+")>查看 </a>"
+                                  +"<a href='javascript:;' onclick=get("+item1.id+")>  抓取信息 </a>"
+                                  +"<a href='javascript:;' onclick=del("+item1.id+")> 删除</a>"
+                            +"</td>"+
+                        "</tr>"
+                    );
+                });
+            });
+            goPAge(1,10);
+            //下拉列表选中的值进行分页
+            $("#jumpPage").bind("change",function () {
+                let options=$("#jumpPage option:selected");
+                if (options.val()=='all'){
+                    pdnum = length;
+                }else {
+                    pdnum = options.val();
+                }
+                goPAge(1,pdnum);
+                //console.log(options.val());
+            });
+        }
+
+
+     });
+
+    /**进行分页函数
+     * pno--页数
+     * psize--每页显示记录数
+     * 分页部分是从真实数据行开始，因而存在加减某个常数，以确定真正的记录数
+     * 纯js分页的实质是数据行全部加载，通过是否显示属性完成分页功能
+     * */
+    function goPAge(pno,psize) {
+        //全部的记录数
+        let num=length;
+        //console.log(length)
+        //console.log(num);
+        //总页数
+        totalPage=0;
+        //每页显示的个数
+        pageSize=psize;
+        //计算总个数来进行分多少页
+        if(num/pageSize>parseInt(num/pageSize)){
+            totalPage=parseInt(num/pageSize)+1;
+        }else{
+            totalPage=parseInt(num/pageSize);
+        }
+        //打印总页数
+        console.log("总页数为："+totalPage);
+        //当前页数
+        currentPage=pno;
+        //打印当前页
+        console.log("当前页为："+currentPage);
+        //开始显示的个数1
+        let startRow=pageSize*(currentPage-1)+1;
+        //结束显示的个数4
+        let endRow=currentPage*pageSize;
+        //按照个数计算结束页的是哪一个个数
+        endRow=(endRow>num)?num:endRow;
+        //console.log(endRow);
+        //所有行隐藏
+        $("#list-content tr").hide();
+        //显示一页的行数
+        for(let i=startRow-1;i<=endRow;i++){
+            $("#list-content tr").eq(i).show();
+        }
+        //右下角显示
+        let nums = num
+        let tempStr=startRow+"-"+endRow+"\t"+"共"+nums+"条";
+        document.getElementById("tempStr").innerText=tempStr;
+
+        document.getElementById("pno").innerText=currentPage;
+
+        let all_page="共"+totalPage+"页";
+        document.getElementById("all_page").innerText=all_page;
+    }
+    /*分页结束*/
+    //首页 上一页 下一页 尾页图标按作用
+    //首页
+    function first_page_click() {
+        if(currentPage>1){
+            goPAge(1,pageSize);
+        }else{
+            console.log("目前是第一页");
+        }
+    }
+    //上一页
+    function left_page_click() {
+        if(currentPage>1){
+            goPAge(currentPage-1,pageSize);
+        }else{
+            console.log("目前是第一页");
+        }
+    }
+    //下一页
+    function right_page_click() {
+        if(currentPage<totalPage){
+            goPAge(currentPage+1,pageSize);
+        }else{
+            console.log("目前是最后一页");
+        }
+    }
+    //尾页
+    function end_page_click() {
+        if(currentPage<totalPage){
+            goPAge(totalPage,pageSize);
+        }else{
+            console.log("目前是最后一页");
+        }
+    }
+
+
+    //删除之后更新数据
+    function del(asin) {
+        //alert(asin)
+        if (!confirm("确定删除吗？")) {
+                return;
+            }
+
+        $.ajax({
+            url: '{{ url_for('sp_bp.del_asin') }}',
+            data: {'asin':asin},
+            type: 'post',
+            dataType: 'json',
+            success:function (data){
+                //console.log(data.values);
+                length = Object.keys(data.values).length
+                $('#count_num').empty();
+                $('#count_num').append(
+                    "您当前已经添加的产品数量为："+"<span style='color: red'>"+length+"个</span>"
+                );
+                //let xtb = document.getElementById('list-content').getElementsByTagName('tr').length
+                //console.log(xtb)
+                $("#tbody").find("tr").remove();
+
+                $.each(data,function (i,item) {
+                    //进行二次遍历json数据
+                    $.each(item,function (j,item1) {
+                        //console.log(item1)
+                        //向表格中动态添加数据
+                        $("#tbody").append(
+                            "<tr>"+
+                                "<td>"+"<input type='checkbox' name='checkItem' value='"+item1.id+"'>"+"</td>"+
+                                "<td><a href="+item1.url+" target='_blank'>"+item1.asin+"</a></td>"+
+                                "<td>"+item1.market+"</td>"+
+                                "<td style='text-align: center; max-width: 200px; overflow:hidden; text-overflow: ellipsis; white-space: nowrap'>"+item1.goods_name+"</td>"+
+                                "<td>"+item1.time+"</td>"+
+                                "<td>"+"</td>"+
+                                "<td>"+"<a href='javascript:;' onclick=query("+item1.id+")>查看 </a>"
+                                      +"<a href='javascript:;' onclick=get("+item1.id+")>  抓取信息 </a>"
+                                      +"<a href='javascript:;' onclick=del("+item1.id+")> 删除</a>"
+                                +"</td>"+
+                            "</tr>"
+                        );
+                    });
+                });
+
+                let options=$("#jumpPage option:selected");
+                //console.log(options.val())
+                if (options.val()=='all'){
+                    pdnum = length;
+                }else {
+                    pdnum = options.val();
+                }
+                goPAge(1,pdnum);
+            }
+        })
+    }
+
+
+    //筛选
+    $('#mkp').bind('change',function () {
+        let opt = $('#mkp option:selected');
+        let mkp = $('#mkp').val();
+        //console.log(mkp)
+        $.ajax({
+            type:'post',
+            url:'{{ url_for('sp_bp.filter') }}',
+            data:{'mkp':mkp},
+            dataType:'json',
+            success:function (data) {
+                console.log(data.values);
+                length = Object.keys(data.values).length
+                $('#count_num').empty();
+                $('#count_num').append(
+                    "您当前已经添加的产品数量为："+"<span style='color: red'>"+length+"个</span>"
+                );
+                //let xtb = document.getElementById('list-content').getElementsByTagName('tr').length
+                //console.log(xtb)
+                $("#tbody").find("tr").remove();
+                //let xtbb = document.getElementById('list-content').getElementsByTagName('tr').length
+                //console.log(xtbb)
+                $.each(data,function (i,item) {
+                    //进行二次遍历json数据
+                    $.each(item,function (j,item1) {
+                        //console.log(item1)
+                        //向表格中动态添加数据
+                        $("#tbody").append(
+                            "<tr>"+
+                                "<td>"+"<input type='checkbox' name='checkItem' value='"+item1.id+"'>"+"</td>"+
+                                "<td><a href="+item1.url+" target='_blank'>"+item1.asin+"</a></td>"+
+                                "<td>"+item1.market+"</td>"+
+                                "<td style='text-align: center; max-width: 200px; overflow:hidden; text-overflow: ellipsis; white-space: nowrap'>"+item1.goods_name+"</td>"+
+                                "<td>"+item1.time+"</td>"+
+                                "<td>"+"</td>"+
+                                "<td>"+"<a href='javascript:;' onclick=query("+item1.id+")>查看 </a>"
+                                      +"<a href='javascript:;' onclick=get("+item1.id+")>  抓取信息 </a>"
+                                      +"<a href='javascript:;' onclick=del("+item1.id+")> 删除</a>"
+                                +"</td>"+
+                            "</tr>"
+                        );
+                    });
+                    //let num = $('#tbody').find('tr').length
+                    //console.log(num)
+                });
+
+                let options=$("#jumpPage option:selected");
+                //console.log(options.val())
+                if (options.val()=='all'){
+                    pdnum = length;
+                }else {
+                    pdnum = options.val();
+                }
+                goPAge(1,pdnum);
+            }
+        })
+    })
+
+
+    </script>
+
+<style>
+    .table tr>th {
+            text-align: center;
+        }
+
+       .page {
+           height: 50px;
+           width: 100%;
+           background-color: #ffffff;
+           opacity: 0.5;
+       }
+
+        .page table{
+            width: 100%;
+            height: 100%;
+        }
+
+        .page table tr{
+            width: 100%;
+            height: 100%;
+        }
+         .page table tr>td{
+             width: 32%;
+             height: 100%;
+             border: 1px solid #ffffff;
+         }
+        .td_body{
+            vertical-align: middle;
+        }
+       p#tempStr {
+           float: right;
+           text-align: center;
+           line-height: 4;
+           margin-right: 23px;
+       }
+        .td_body ul{
+            list-style: none;
+            display: flex;
+            vertical-align: middle;
+        }
+
+        .td_body ul>li{
+            display: table-footer-group;
+            text-align: center;
+            width: 12%;
+            line-height: 5px;
+        }
+
+        .td_body ul li >p{
+            line-height: 16px;
+        }
+
+        .tbody tr >td{
+            text-align: center;
+        }
+</style>
+
+</body>
+</html>
+
