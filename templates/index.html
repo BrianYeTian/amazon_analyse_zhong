@@ -1,262 +1,513 @@
 <!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="">
-    <meta name="author" content="">
-{#    网站图形标需要修改#}
-    <link rel="icon" href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/favicon.ico">
-    <link rel="canonical" href="https://getbootstrap.com/docs/3.4/examples/dashboard/">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Gramos - 首页</title>
 
-    <title>Dashboard Template for Bootstrap</title>
+    <!-- begin::global styles -->
+    <link rel="stylesheet" href="../static/assets/vendors/bundle.css" type="text/css">
+    <!-- end::global styles -->
 
-    <!-- Bootstrap core CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- begin::datepicker -->
+    <link rel="stylesheet" href="../static/assets/vendors/datepicker/daterangepicker.css">
+    <!-- begin::datepicker -->
 
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <link href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+    <!-- begin::vmap -->
+    <link rel="stylesheet" href="../static/assets/vendors/vmap/jqvmap.min.css">
+    <!-- begin::vmap -->
 
-    <!-- Custom styles for this template -->
-    <link href="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/examples/dashboard/dashboard.css" rel="stylesheet">
+    <!-- begin::custom styles -->
+    <link rel="stylesheet" href="../static/assets/css/app.css" type="text/css">
+    <link rel="stylesheet" href="../static/assets/css/custom.css" type="text/css">
+    <!-- end::custom styles -->
 
-    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-    <!--[if lt IE 9]><script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-    <script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/js/ie-emulation-modes-warning.js"></script>
+</head>
+<body>
 
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-  </head>
+<!-- end::sidebar -->
 
-  <body>
+<!-- begin::side menu -->
+<div class="side-menu">
+    <div class='side-menu-body'>
+        <ul>
+            <li class="side-menu-divider">Navigation</li>
+            <li class="open">
+                <a href="#"><i class="icon ti-home"></i> <span>首 页</span> </a>
+                <ul>
+                    <li><a class="active" href="{{ url_for('user_bp.index') }}">任务预览</a></li>
+{#                    <li><a href="dashboard-two.html">Website Statistics</a></li>#}
+{#                    <li><a href="dashboard-three.html">Alternative</a></li>#}
+                </ul>
+            </li>
+{#            <li><a href="widgets.html"><i class="icon ti-paint-bucket"></i> <span>Widgets</span> <span#}
+{#                    class="badge bg-danger-gradient">8+</span> </a></li>#}
+            <li>
+                <a data-attr="layout-builder-toggle" href="#">
+                    <i class="icon ti-layout"></i>
+                    <span>搜索排名监控</span>
+                </a>
+                <ul>
+                    <li>
+                        <a href="#">Menu</a>
+                        <ul>
+                            <li><a href="layout-horizontal-menu.html">Horizontal</a></li>
+                            <li><a href="layout-icon-menu.html">Icon</a></li>
+                            <li><a href="layout-dark-menu.html">Dark</a></li>
+                            <li><a href="layout-hidden-menu.html">Hidden</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="layout-container.html">Container</a></li>
+                    <li><a href="layout-dark.html">Dark</a></li>
+                    <li>
+                        <a href="#">Other</a>
+                        <ul>
+                            <li><a href="layout-1.html">Layout 1</a></li>
+                            <li><a href="layout-2.html">Layout 2</a></li>
+                            <li><a href="layout-3.html">Layout 3</a></li>
+                            <li><a href="layout-4.html">Layout 4</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li><a href="#"><i class="icon ti-rocket"></i> <span>类 目</span> </a>
+                <ul>
+                    <li><a href="chat.html">Chat </a></li>
+                    <li><a href="#">Email </a>
+                        <ul>
+                            <li><a href="inbox.html">Inbox </a></li>
+                            <li><a href="read-email.html">Email Read </a></li>
+                            <li><a href="compose-email.html">Compose </a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#">Calendar </a>
+                        <ul>
+                            <li><a href="calendar-basic.html">Basic Calendar </a></li>
+                            <li><a href="external-dragging.html">External Dragging </a></li>
+                            <li><a href="calendar-list.html">Calendar List </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li><a href="#"><i class="icon ti-layers-alt"></i> <span>关键词查询</span> </a>
+                <ul>
+                    <li><a href="alerts.html">Alerts </a></li>
+                    <li><a href="badge.html">Badge </a></li>
+                    <li><a href="buttons.html">Buttons </a></li>
+                    <li><a href="pagination.html">Pagination </a></li>
+                    <li><a href="dropdown.html">Dropdown </a></li>
+                    <li><a href="accordion.html">Accordion </a></li>
+                    <li><a href="#">Cards </a>
+                        <ul>
+                            <li><a href="basic-cards.html">Basic Cards </a></li>
+                            <li><a href="image-cards.html">Image Cards </a></li>
+                            <li><a href="card-scroll.html">Card Scroll </a></li>
+                            <li><a href="other-cards.html">Others </a></li>
+                        </ul>
+                    </li>
+                    <li><a href="colors.html">Colors </a></li>
+                    <li><a href="carousel.html">Carousel </a></li>
+                    <li><a href="tables.html">Tables </a>
+                        <ul>
+                            <li><a href="tables.html">Basic Tables </a></li>
+                            <li><a href="data-table.html">Data Table </a></li>
+                            <li><a href="responsive-table.html">Responsive Table </a></li>
+                        </ul>
+                    </li>
+                    <li><a href="typography.html">Typography </a></li>
+                    <li><a href="list-group.html">List Group </a></li>
+                    <li><a href="media-object.html">Media Object </a></li>
+                    <li><a href="avatar.html">Avatars </a></li>
+                    <li><a href="images.html">Images </a></li>
+                    <li><a href="progress.html">Progrees </a></li>
+                    <li><a href="modal.html">Modal </a></li>
+                    <li><a href="spinners.html">Spinners </a></li>
+                    <li><a href="navs.html">Navs </a></li>
+                    <li><a href="tab.html">Tab </a></li>
+                    <li><a href="tooltip.html">Tooltip </a></li>
+                    <li><a href="popovers.html">Popovers </a></li>
+                </ul>
+            </li>
+            <li><a href="#"><i class="icon ti-paint-roller"></i> <span>单品数据</span> </a>
+                <ul>
+                    <li><a href="{{ url_for('sp_bp.add') }}" style=''> 添加产品</a></li>
+                    <li><a href="lightbox.html"> 销量跟踪</a></li>
+                    <li><a href="toast.html">销量查询 </a></li>
+                    <li><a href="tour.html">评价抓取 </a></li>
+                    <li><a href="swiper.html">评价分析 </a></li>
+                    <li><a href="tree-view.html">搜索排名监控 </a></li>
+                    <li><a href="tree-view.html">搜索排名查看 </a></li>
+                </ul>
+            </li>
+            <li><a href="#"><i class="icon ti-clipboard"></i> <span>广告分析</span> </a>
+                <ul>
+                    <li><a href="basic-form.html">Basic Form </a></li>
+                    <li><a href="custom-form.html">Custom Form </a></li>
+                    <li><a href="advanced-form.html">Advanced Form </a></li>
+                    <li><a href="datepicker.html">Datepicker </a></li>
+                    <li><a href="timepicker.html">Timepicker </a></li>
+                    <li><a href="colorpicker.html">Colorpicker </a></li>
+                    <li><a href="form-validation.html">Form Validation </a></li>
+                    <li><a href="form-wizard.html">Form Wizard </a></li>
+                    <li><a href="file-upload.html">File Upload </a></li>
+                    <li><a href="#">CKEditor </a>
+                        <ul>
+                            <li><a href="ckeditor-article.html">Article Editor </a></li>
+                            <li><a href="ckeditor-inline.html">Inline Editor </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+{#            <li><a href="icons.html"><i class="icon ti-crown"></i> <span>广告分析</span> </a></li>#}
+            <li>
+                <a href="#">
+                    <i class="icon ti-map"></i>
+                    <span>产品关联购买</span>
+                </a>
+                <ul>
+                    <li><a href="google-map.html">Google</a></li>
+                    <li><a href="vector-map.html">Vector</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="icon ti-pie-chart"></i>
+                    <span>关于作者</span>
+                </a>
+                <ul>
+                    <li><a href="chart-chartjs.html">Chartjs</a></li>
+                    <li><a href="chart-justgage.html">Justgage</a></li>
+                    <li><a href="chart-peity.html">Peity</a></li>
+                </ul>
+            </li>
+            <li><a href="#"><i class="icon ti-face-smile"></i> <span>投诉与建议</span> </a>
+                <ul>
+                    <li><a href="login.html">投诉 </a></li>
+                    <li><a href="register.html">建议 </a></li>
+                </ul>
+            </li>
+{#            <li><a href="#"><i class="icon ti-files"></i> <span>Pages</span> </a>#}
+{#                <ul>#}
+{#                    <li><a href="profile.html">Profile </a></li>#}
+{#                    <li><a href="timeline.html">Timeline </a></li>#}
+{#                    <li><a href="invoice.html">Invoice </a></li>#}
+{#                    <li><a href="pricing-table.html">Pricing Table </a></li>#}
+{#                    <li><a href="search-result.html">Search Result </a></li>#}
+{#                    <li><a href="blank-page.html">Blank Page V1 </a></li>#}
+{#                    <li><a href="blank-page-v2.html">Blank Page V2 </a></li>#}
+{#                    <li><a href="#">Errors </a>#}
+{#                        <ul>#}
+{#                            <li><a href="404.html">404 </a></li>#}
+{#                            <li><a href="404-alternative.html">404 Alternative </a></li>#}
+{#                            <li><a href="mean-at-work.html">Mean at Work </a></li>#}
+{#                        </ul>#}
+{#                    </li>#}
+{#                </ul>#}
+{#            </li>#}
+{#            <li><a href="#"><i class="icon ti-menu"></i> <span>Menu Level</span></a>#}
+{#                <ul>#}
+{#                    <li><a href="#">Menu Level </a>#}
+{#                        <ul>#}
+{#                            <li><a href="#">Menu Level </a></li>#}
+{#                        </ul>#}
+{#                    </li>#}
+{#                </ul>#}
+{#            </li>#}
+        </ul>
+    </div>
+</div>
+<!-- end::side menu -->
 
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="{{url_for('user_bp.index')}}">亚马逊数据分析平台</a>
+<!-- begin::navbar -->
+<nav class="navbar">
+    <div class="container-fluid">
+
+        <div class="header-logo">
+            <a href="#">
+                <img src="../static/assets/media/image/light-logo.png" alt="...">
+                <span class="logo-text d-none d-lg-block">一个神奇的网站</span>
+            </a>
         </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li style="margin-top: 14px; color: #8a6d3b">欢迎 <mark style="background-color: #222222;color: #8a6d3b">{{ user.username }}</mark></li>
-            <li><a href="{{ url_for('user_bp.logout') }}">退出</a></li>
-          </ul>
-{#            搜索结果要往哪里提交？#}
-          <form class="navbar-form navbar-right">
-            <input type="text" class="form-control" placeholder="搜索...">
-          </form>
+
+        <div class="header-body">
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown d-none d-lg-block">
+                    <a href="#" class="nav-link" data-toggle="dropdown">
+                        <i class="fa fa-th-large"></i>
+                    </a>
+                </li>
+            </ul>
+            <form class="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search ..."
+                           aria-label="Recipient's username"
+                           aria-describedby="button-addon2">
+                    <div class="input-group-append">
+                        <button class="btn" type="button" id="button-addon2">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="#" class="d-lg-none d-sm-block nav-link search-panel-open">
+                        <i class="fa fa-search"></i>
+                    </a>
+                </li>
+                    <li class="nav-item" style="margin-top: 5px;margin-right: 20px">
+                        <h2 class="text-uppercase font-size-12 m-b-0" style="color: whitesmoke">Messages</h2>  <!--需要换成用户名-->
+                        <small class="font-size-16">welcome!</small>
+                    </li>
+                <li class="nav-item dropdown">
+                    <a href="#" data-toggle="dropdown">
+                        <figure class="avatar avatar-sm avatar-state-success">
+                            <img class="rounded-circle" src="../static/assets/media/image/avatar.jpg" alt="...">
+                        </figure>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+<!--                        <a href="profile.html" class="dropdown-item">Profile</a>-->
+<!--                        <a href="#" data-sidebar-target="#settings" class="sidebar-open dropdown-item">Settings</a>-->
+                        <div class="dropdown-divider"></div>
+                        <a href="{{ url_for('user_bp.logout') }}" class="text-danger dropdown-item">Logout</a>
+                    </div>
+                </li>
+                <li class="nav-item d-lg-none d-sm-block">
+                    <a href="#" class="nav-link side-menu-open">
+                        <i class="ti-menu"></i>
+                    </a>
+                </li>
+            </ul>
         </div>
-      </div>
-    </nav>
+
+    </div>
+</nav>
+<!-- end::navbar -->
+
+<!-- begin::main content -->
+<main class="main-content">
 
     <div class="container-fluid">
-      <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
-          <ul class="nav nav-sidebar">
-            <li class="active"><a href="{{url_for('user_bp.index')}}">概 述 <span class="sr-only">(current)</span></a></li>
-            <li><a href="#">广告分析</a></li>
-            <li><a href="#">关键词查询</a></li>
-            <li><a href="{{ url_for('cate_bp.get_cate') }}">亚马逊目录</a></li>
-          </ul>
-          <ul class="nav nav-sidebar">
-            <li><a href="{{ url_for('sp_bp.dp') }}">亚马逊单品数据获取</a></li>
-            <li><a href="{{ url_for('sp_bp.get_review') }}">亚马逊单品评价获取</a></li>
-            <li><a href="{{ url_for('sr_bp.add_search') }}">亚马逊关键词搜索获取</a></li>
-          </ul>
+
+        <!-- begin::page header -->
+        <div class="page-header d-md-flex justify-content-between align-items-center">
+            <div>
+                <h4>Guten Tag</h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">首页</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">预览</li>
+                    </ol>
+                </nav>
+            </div>
+            <div>
+                <div class="reportrange btn btn-light">
+                    <i class="ti-calendar m-r-10"></i>
+                    <span></span>
+                    <i class="ti-angle-down m-l-10"></i>
+                </div>
+            </div>
+        </div>
+        <!-- end::page header -->
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6>抓取单品销量板块</h6>
+                                <h4 class="m-b-0 font-weight-bold">
+                                    0.32%
+                                    <small data-toggle="tooltip" id="Than last week"
+                                           class="text-success font-size-11">
+                                        1.2%
+                                        <i class="ti-arrow-up"></i>
+                                    </small>
+                                </h4>
+                            </div>
+                            <div>
+                                <span class="pie"
+                                      data-peity='{ "fill": ["#5d78ff", "#eeeeee"], "radius": 30 }'>1/6</span>   <!--改成所选时间段内添加的产品占比-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6>抓取搜索排名板块</h6>
+                                <h4 class="m-b-0 font-weight-bold">
+                                    3,137
+                                    <small data-toggle="tooltip" title="Than last week"
+                                           class="text-danger font-size-11">
+                                        0.2%
+                                        <i class="ti-arrow-down"></i>
+                                    </small>
+                                </h4>
+                            </div>
+                            <div>
+                                <span class="pie"
+                                      data-peity='{ "fill": ["#0abb87", "#eeeeee"], "radius": 30 }'>226/0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6>抓取目录排名板块</h6>
+                                <h4 class="m-b-0 font-weight-bold">
+                                    $306.20
+                                    <small data-toggle="tooltip" title="Than last week"
+                                           class="text-danger font-size-11">
+                                        2.1%
+                                        <i class="ti-arrow-down"></i>
+                                    </small>
+                                </h4>
+                            </div>
+                            <div>
+                                <span class="pie"
+                                      data-peity='{ "fill": ["#ea4141", "#eeeeee"], "radius": 30 }'>1,4</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6>抓取产品评价板块</h6>
+                                <h4 class="m-b-0 font-weight-bold">
+                                    1,650
+                                    <small data-toggle="tooltip" title="Than last week"
+                                           class="text-success font-size-11">
+                                        1.2%
+                                        <i class="ti-arrow-up"></i>
+                                    </small>
+                                </h4>
+                            </div>
+                            <div>
+                                <span class="pie" data-peity='{ "fill": ["#3a3f51", "#eeeeee"], "radius": 30 }'>0.52,1.041</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="tips" style="margin-top: 8%">
-            <h3 style="margin-left: 35%">用前须知：</h3><br>
-            <h4 style="margin-left: 35%">1. 目前只开发了跟踪销量的功能，其他功能抽时间慢慢做</h4>
-            <h4 style="margin-left: 35%;margin-top: 1.5%">2. 跟踪销量功能的逻辑为获取单个产品每日的库存数据，要获得比较具有参考意义的数据，建议时间跨度长一些</h4>
-            <h4 style="margin-left: 35%;margin-top: 1.5%">3. 同时会跟踪排名、价格等信息</h4>
-            <h4 style="margin-left: 35%;margin-top: 1.5%;color: red">4. UK市场需要登陆才能更改邮编，此版本暂时不支持模拟登陆。不建议跟踪UK市场</h4>
-            <h4 style="margin-left: 35%;margin-top: 1.5%">5. 使用指南：
-                <h5 style="margin-left: 36.5%;margin-top: 0.8%">a. 首先添加要跟踪的产品，路径：亚马逊单品页面 > 继续添加产品 > 输入链接并提交</h5>
-                <h5 style="margin-left: 36.5%;margin-top: 0.8%">b. 返回到产品信息汇总页面，可以批量提交，也可以单个产品提交。由于亚马逊反爬技术以及受网速影响，爬取的速度会比较慢</h5>
-                <h5 style="margin-left: 36.5%;margin-top: 0.8%">c. 爬取完成后，点击“查看”，可看到该产品的详细数据</h5>
-            </h4>
-
-
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-md-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="card-title">Sales Report</h5>
+                                <h6 class="card-subtitle">Sales graph of last 7 months</h6>
+                            </div>
+                            <div class="reportrange btn btn-sm btn-light">
+                                <i class="ti-calendar m-r-10"></i>
+                                <span></span>
+                                <i class="ti-angle-down m-l-10"></i>
+                            </div>
+                            <div class="d-lg-none d-sm-block m-t-15"></div>
+                        </div>
+                        <div class="row m-b-20">
+                            <div class="col-md-6">
+                                <div class="bg-light text-success p-15 text-center m-b-10">
+                                    <h4 class="font-weight-bold">$560.234,076</h4>
+                                    <h6 class="m-b-0">Total Sales</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="bg-light text-warning p-15 text-center m-b-10">
+                                    <h4 class="font-weight-bold">$620,076</h4>
+                                    <h6 class="m-b-0">Average</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <canvas id="chartjs_one"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h5 class="card-title">Regional Sales</h5>
+                                <h6 class="card-subtitle">Graph of total sales of regions. Total and returned
+                                    sales.</h6>
+                            </div>
+                            <div>
+                                <div class="btn-group">
+                                    <button class="btn btn-light btn-sm active">Yearly</button>
+                                    <button class="btn btn-light btn-sm">Monthly</button>
+                                </div>
+                            </div>
+                        </div>
+                        <canvas id="chartjs_two"></canvas>
+                        <div class="row text-center m-t-20">
+                            <div class="col-md-4 m-t-20">
+                                <h4 class="font-weight-bold text-primary">$34.234,076</h4>
+                                <h6 class="m-b-0">Total Sales</h6>
+                            </div>
+                            <div class="col-md-4 m-t-20">
+                                <h4 class="font-weight-bold text-warning">$1.620,076</h4>
+                                <h6 class="m-b-0">Average</h6>
+                            </div>
+                            <div class="col-md-4 m-t-20">
+                                <h4 class="font-weight-bold text-danger">$20,076</h4>
+                                <h6 class="m-b-0">Return</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
 
-{#        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">#}
-{#          <h1 class="page-header">Dashboard</h1>#}
+</main>
+<!-- end::main content -->
 
-{#          <div class="row placeholders">#}
-{#            <div class="col-xs-6 col-sm-3 placeholder">#}
-{#              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">#}
-{#              <h4>Label</h4>#}
-{#              <span class="text-muted">Something else</span>#}
-{#            </div>#}
-{#            <div class="col-xs-6 col-sm-3 placeholder">#}
-{#              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">#}
-{#              <h4>Label</h4>#}
-{#              <span class="text-muted">Something else</span>#}
-{#            </div>#}
-{#            <div class="col-xs-6 col-sm-3 placeholder">#}
-{#              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">#}
-{#              <h4>Label</h4>#}
-{#              <span class="text-muted">Something else</span>#}
-{#            </div>#}
-{#            <div class="col-xs-6 col-sm-3 placeholder">#}
-{#              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">#}
-{#              <h4>Label</h4>#}
-{#              <span class="text-muted">Something else</span>#}
-{#            </div>#}
-{#          </div>#}
-{##}
-{#          <h2 class="sub-header">Section title</h2>#}
-{#          <div class="table-responsive">#}
-{#            <table class="table table-striped">#}
-{#              <thead>#}
-{#                <tr>#}
-{#                  <th>#</th>#}
-{#                  <th>Header</th>#}
-{#                  <th>Header</th>#}
-{#                  <th>Header</th>#}
-{#                  <th>Header</th>#}
-{#                </tr>#}
-{#              </thead>#}
-{#              <tbody>#}
-{#                <tr>#}
-{#                  <td>1,001</td>#}
-{#                  <td>Lorem</td>#}
-{#                  <td>ipsum</td>#}
-{#                  <td>dolor</td>#}
-{#                  <td>sit</td>#}
-{#                </tr>#}
-{#                <tr>#}
-{#                  <td>1,002</td>#}
-{#                  <td>amet</td>#}
-{#                  <td>consectetur</td>#}
-{#                  <td>adipiscing</td>#}
-{#                  <td>elit</td>#}
-{#                </tr>#}
-{#                <tr>#}
-{#                  <td>1,003</td>#}
-{#                  <td>Integer</td>#}
-{#                  <td>nec</td>#}
-{#                  <td>odio</td>#}
-{#                  <td>Praesent</td>#}
-{#                </tr>#}
-{#                <tr>#}
-{#                  <td>1,003</td>#}
-{#                  <td>libero</td>#}
-{#                  <td>Sed</td>#}
-{#                  <td>cursus</td>#}
-{#                  <td>ante</td>#}
-{#                </tr>#}
-{#                <tr>#}
-{#                  <td>1,004</td>#}
-{#                  <td>dapibus</td>#}
-{#                  <td>diam</td>#}
-{#                  <td>Sed</td>#}
-{#                  <td>nisi</td>#}
-{#                </tr>#}
-{#                <tr>#}
-{#                  <td>1,005</td>#}
-{#                  <td>Nulla</td>#}
-{#                  <td>quis</td>#}
-{#                  <td>sem</td>#}
-{#                  <td>at</td>#}
-{#                </tr>#}
-{#                <tr>#}
-{#                  <td>1,006</td>#}
-{#                  <td>nibh</td>#}
-{#                  <td>elementum</td>#}
-{#                  <td>imperdiet</td>#}
-{#                  <td>Duis</td>#}
-{#                </tr>#}
-{#                <tr>#}
-{#                  <td>1,007</td>#}
-{#                  <td>sagittis</td>#}
-{#                  <td>ipsum</td>#}
-{#                  <td>Praesent</td>#}
-{#                  <td>mauris</td>#}
-{#                </tr>#}
-{#                <tr>#}
-{#                  <td>1,008</td>#}
-{#                  <td>Fusce</td>#}
-{#                  <td>nec</td>#}
-{#                  <td>tellus</td>#}
-{#                  <td>sed</td>#}
-{#                </tr>#}
-{#                <tr>#}
-{#                  <td>1,009</td>#}
-{#                  <td>augue</td>#}
-{#                  <td>semper</td>#}
-{#                  <td>porta</td>#}
-{#                  <td>Mauris</td>#}
-{#                </tr>#}
-{#                <tr>#}
-{#                  <td>1,010</td>#}
-{#                  <td>massa</td>#}
-{#                  <td>Vestibulum</td>#}
-{#                  <td>lacinia</td>#}
-{#                  <td>arcu</td>#}
-{#                </tr>#}
-{#                <tr>#}
-{#                  <td>1,011</td>#}
-{#                  <td>eget</td>#}
-{#                  <td>nulla</td>#}
-{#                  <td>Class</td>#}
-{#                  <td>aptent</td>#}
-{#                </tr>#}
-{#                <tr>#}
-{#                  <td>1,012</td>#}
-{#                  <td>taciti</td>#}
-{#                  <td>sociosqu</td>#}
-{#                  <td>ad</td>#}
-{#                  <td>litora</td>#}
-{#                </tr>#}
-{#                <tr>#}
-{#                  <td>1,013</td>#}
-{#                  <td>torquent</td>#}
-{#                  <td>per</td>#}
-{#                  <td>conubia</td>#}
-{#                  <td>nostra</td>#}
-{#                </tr>#}
-{#                <tr>#}
-{#                  <td>1,014</td>#}
-{#                  <td>per</td>#}
-{#                  <td>inceptos</td>#}
-{#                  <td>himenaeos</td>#}
-{#                  <td>Curabitur</td>#}
-{#                </tr>#}
-{#                <tr>#}
-{#                  <td>1,015</td>#}
-{#                  <td>sodales</td>#}
-{#                  <td>ligula</td>#}
-{#                  <td>in</td>#}
-{#                  <td>libero</td>#}
-{#                </tr>#}
-{#              </tbody>#}
-{#            </table>#}
-{#          </div>#}
-{#        </div>#}
-{#      </div>#}
-{#    </div>#}
-{##}
-{#    <!-- Bootstrap core JavaScript#}
-{#    ================================================== -->#}
-{#    <!-- Placed at the end of the document so the pages load faster -->#}
-{#    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>#}
-{#    <script>window.jQuery || document.write('<script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/js/vendor/jquery.min.js"><\/script>')</script>#}
-{#    <script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/dist/js/bootstrap.min.js"></script>#}
-{#    <!-- Just to make our placeholder images work. Don't actually copy the next line! -->#}
-{#    <script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/js/vendor/holder.min.js"></script>#}
-{#    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->#}
-{#    <script src="https://cdn.jsdelivr.net/npm/@bootcss/v3.bootcss.com@1.0.13/assets/js/ie10-viewport-bug-workaround.js"></script>#}
-  </body>
+<!-- begin::global scripts -->
+<script src="../static/assets/vendors/bundle.js"></script>
+<!-- end::global scripts -->
+
+<!-- begin::charts -->
+<script src="../static/assets/vendors/charts/chartjs/chart.min.js"></script>
+<script src="../static/assets/vendors/charts/peity/jquery.peity.min.js"></script>
+<script src="../static/assets/js/examples/charts/chartjs.js"></script>
+<script src="../static/assets/js/examples/charts/peity.js"></script>
+<!-- end::charts -->
+
+<!-- begin::daterangepicker -->
+<script src="../static/assets/vendors/datepicker/daterangepicker.js"></script>
+<!-- end::daterangepicker -->
+
+<!-- begin::dashboard -->
+<script src="../static/assets/js/examples/dashboard.js"></script>
+<!-- end::dashboard -->
+
+<!-- begin::vamp -->
+<script src="../static/assets/vendors/vmap/jquery.vmap.min.js"></script>
+<script src="../static/assets/vendors/vmap/maps/jquery.vmap.usa.js"></script>
+<script src="../static/assets/js/examples/vmap.js"></script>
+<!-- end::vamp -->
+
+<!-- begin::custom scripts -->
+<script src="../static/assets/js/custom.js"></script>
+<script src="../static/assets/js/app.js"></script>
+<!-- end::custom scripts -->
+
+</body>
 </html>

@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import threading
 from datetime import datetime
 import time
 from io import BytesIO
@@ -22,6 +23,8 @@ from apps.user.model import User
 from apps.user.view import user_bp, g
 from exts import db
 from settings import APP_STATIC
+from concurrent.futures import ThreadPoolExecutor
+
 
 sp_bp = Blueprint('sp_bp', __name__)
 
@@ -29,6 +32,7 @@ before_request_list = ['/dp/get_review', '/dp', '/add_pd', '/query', '/query_all
                        '/trace_pds', '/del', '/select_asin', 'review_download/delete', '/get_review_download',
                        '/review_download', '/add_by_sheet', '/filter','/get_asins_chart']
 
+executor = ThreadPoolExecutor()
 
 @user_bp.before_app_request
 def before_req():
@@ -253,6 +257,7 @@ def add_by_sheet():
 
 @sp_bp.route('/trace_pds', methods=['GET', 'POST'])
 def trace_pds():
+    global db
     mkp_url_list = []
     asin_list = []
     if request.method == 'POST':
@@ -281,16 +286,33 @@ def trace_pds():
         mkp_url_list.append(di)
         asin_list.append(pd_info.asin)
 
+    executor.submit(write_to_db,mkp_url_list,asin_list)
+    # write_to_db(mkp_url_list,asin_list)
+    pd_lst = Amazon.query.filter_by(user_id=g.user.user_id).all()
+    return render_template('single_product/product_page.html', user=g.user, pd_lst=pd_lst)
+
+def get_pds_info(mkp_url_list,asin_list):
     get_pd_infos = EU_trace_pd(mkp_url_list, asin_list)
+
+    return get_pd_infos
     # 传回来的值是一个包含多个产品信息的列表，需要再修改
+
+def write_to_db(mkp_url_list,asin_list):
+    get_pd_infos = get_pds_info(mkp_url_list,asin_list)
     print(get_pd_infos)
+
     for get_pd_info in get_pd_infos:
+        print(get_pd_info)
+        print('到这里了1')
+
         pd_infos = Amazon.query.filter_by(asin=get_pd_info[6],
                                           market=get_pd_info[8]).first()  # 结合每个ASIN和市场在信息表里面查询到对应的id
+        print('到这里了2')
         write_pd = Trace_pd_info(asin=get_pd_info[6], price=get_pd_info[0], rating_num=get_pd_info[1],
                                  rating=get_pd_info[2], cate=get_pd_info[3], rank=get_pd_info[4],
                                  inventory=get_pd_info[5], pd_info_id=pd_infos.product_id, user_id=g.user.user_id,
                                  market=get_pd_info[8])
+        print(write_pd)
         db.session.add(write_pd)
         db.session.commit()
         print('数据更新成功')
@@ -299,8 +321,6 @@ def trace_pds():
             pd_infos.goods_name = get_pd_info[7]
             db.session.commit()
 
-    pd_lst = Amazon.query.filter_by(user_id=g.user.user_id).all()
-    return render_template('single_product/product_page.html', user=g.user, pd_lst=pd_lst)
 
 
 @sp_bp.route('/query', methods=['GET', 'POST'])
@@ -450,9 +470,15 @@ def put_files(file):
     return send_from_directory(APP_STATIC, file, as_attachment=True)
 
 
-@sp_bp.route('/create_chart', methods=['GET'])
+@sp_bp.route('/create_chart', methods=['GET','POST'])
 def create_chart():
-
+    if request.method=='POST':
+        asins = request.form.get('asins')
+        date = request.form.get('date')
+        mkp = request.form.get('mkp')
+        if asins:
+            for asin in json.loads(asins):
+                pd = Amazon.query.filter_by(asin=asin,market=json.loads(mkp),user_id=g.user.user_id)
     return render_template('single_product/test1.html')
 
 
@@ -471,3 +497,5 @@ def get_asins_chart():
             return Response(json.dumps(lst))
         else:
             return Response(json.dumps([{'msg': '无查询结果'}]))
+
+

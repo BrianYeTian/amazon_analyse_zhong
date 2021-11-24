@@ -685,7 +685,7 @@
                             </select>
                         </div>
                         <div style="margin-top: -53px;margin-left: 300px">
-                            <div class="reportrange btn btn-light" name="datatime_select">
+                            <div class="reportrange btn btn-light" name="datatime_select" id="datatime_select">
                                 <i class="ti-calendar m-r-10"></i>
                                 <span></span>
                                 <i class="ti-angle-down m-l-10"></i>
@@ -696,14 +696,6 @@
                         <div class="form-group btn-block" style="width: 630px">
 
                             <select class="js-example-basic-single" multiple id="asin_select">
-{#                                <option></option>#}
-{#                                <option value="France">France</option>#}
-{#                                <option selected value="Brazil">Brazil</option>#}
-{#                                <option selected value="Yemen">Yemen</option>#}
-{#                                <option selected value="United States">United States</option>#}
-{#                                <option value="China">China</option>#}
-{#                                <option value="Argentina">Argentina</option>#}
-{#                                <option value="Bulgaria">Bulgaria</option>#}
                             </select>
                         </div>
 
@@ -808,8 +800,28 @@
                     }
                 }
             })
+        })
+
+
+        //根据选择的时间和asin动态加载图表
+        $('#asin_select').bind('change',function () {
+            let opt1 = $('#asin_select option:selected');
+            let asins = opt1.val();
+            let opt2 = $('#datatime_select option:selected');
+            let date = opt2.val();
+            console.log(asins,date)
+            $.ajax({
+                type:'post',
+                datatype:'json',
+                data:{'asins':asins,'date':date},
+                url:'{{ url_for('sp_bp.create_chart') }}',
+                success:function (data) {
+                    //组合成图表需要的数据，再调用图表函数
+                }
+            })
 
         })
+
 
         function chartjs_eight() {
             var element = document.getElementById("chartjs_eight");

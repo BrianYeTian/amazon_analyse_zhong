@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template, request, jsonify, redirect, session, url_for, g
+import json
+
+from flask import Blueprint, render_template, request, jsonify, redirect, session, url_for, g, Response
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from apps.user.model import User
@@ -28,20 +30,28 @@ def index():
 @user_bp.route('/user/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        repassword = request.form.get('repassword')
-        nickname = request.form.get('nickname')
+        value = json.loads(request.form.get('value'))
+        if value[0]:
+            username = value[0]
+            password = value[1]
+            repassword = value[2]
+            nickname = value[3]
 
-        if password == repassword:
-            user = User()
-            user.username = username
-            user.password = generate_password_hash(password)
-            user.nickname = nickname
+            # print(username)
 
-            db.session.add(user)
-            db.session.commit()
-            return render_template('user/login.html')
+            if password == repassword:
+                user = User()
+                user.username = username
+                user.password = generate_password_hash(password)
+                user.nickname = nickname
+
+                db.session.add(user)
+                db.session.commit()
+                return Response('注册成功！')
+            else:
+                return Response('注册失败')
+        else:
+            return Response('请输入用户名或密码')
     return render_template('user/register.html')
 
 
@@ -49,7 +59,7 @@ def register():
 def login():
     if request.method == 'POST':
         username = request.form.get('username')
-        password = request.form.get('passwords')
+        password = request.form.get('password')
         print(username)
         print(password)
         users = User.query.filter_by(username=username).all()
@@ -70,15 +80,18 @@ def logout():
     return redirect(url_for('user_bp.index'))
 
 
-@user_bp.route('/user/check_username')
+@user_bp.route('/user/check_username',methods=['POST'])
 def check_username():
-    input_username = request.args.get('username')
+    input_username = request.form.get('username')
     print(input_username)
-    user = User.query.filter(User.username == input_username)
-    if len(user):
-        return jsonify(code=400, msg='用户名已经被注册')
+    if input_username:
+        user = User.query.filter(User.username == input_username).all()
+        if user:
+            return Response('用户名已被注册')
+        else:
+            return Response('用户名可用')
     else:
-        return jsonify(code=200, msg='用户名可用')
+        return Response('请输入用户名')
 
 
 @user_bp.route('/homepage')
