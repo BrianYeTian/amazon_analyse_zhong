@@ -25,14 +25,14 @@ from exts import db
 from settings import APP_STATIC
 from concurrent.futures import ThreadPoolExecutor
 
-
 sp_bp = Blueprint('sp_bp', __name__)
 
 before_request_list = ['/dp/get_review', '/dp', '/add_pd', '/query', '/query_all', '/query_by',
                        '/trace_pds', '/del', '/select_asin', 'review_download/delete', '/get_review_download',
-                       '/review_download', '/add_by_sheet', '/filter','/get_asins_chart']
+                       '/review_download', '/add_by_sheet', '/filter', '/get_asins_chart']
 
 executor = ThreadPoolExecutor()
+
 
 @user_bp.before_app_request
 def before_req():
@@ -68,7 +68,9 @@ def dp():
         # print(json.dumps(dics))
         return Response(json.dumps(dics))
     else:
-        return render_template('single_product/product_page.html', user=g.user)
+        pd_lst = Amazon.query.filter_by(user_id=g.user.user_id).all()
+        print(len(pd_lst))
+        return render_template('single_product/product_page.html', user=g.user, pd_lst=pd_lst)
 
     # if request.method == 'POST':
     #     mkp = request.form.get('mkp')
@@ -113,62 +115,66 @@ def add():
     add_msg = [{'msg': '添加成功'}]
     if request.method == 'POST':
         url = request.form.get('shopurl')
-        if url[-1] != '/':
-            url = url + '/'
-        # print(url)
-        for mk in market:
-            if mk in url:
-                # print(mk)
-                try:
-                    goods_name = re.findall(r'https://www.amazon.[\s\S]*?/(.*?)/dp', url)[0]
-                except:
-                    goods_name = ''
+        if url:
+            if url[-1] != '/':
+                url = url + '/'
+            # print(url)
+            for mk in market:
+                if mk in url:
+                    # print(mk)
+                    try:
+                        goods_name = re.findall(r'https://www.amazon.[\s\S]*?/(.*?)/dp', url)[0]
+                    except:
+                        goods_name = ''
 
-                mkp = re.findall(r'https://www.amazon.(.*?)/', url)[0]
-                if goods_name:
-                    asin_pat = 'https://www.amazon.' + mkp + '/' + goods_name + '/dp/(.*?)/'
+                    mkp = re.findall(r'https://www.amazon.(.*?)/', url)[0]
+                    if goods_name:
+                        asin_pat = 'https://www.amazon.' + mkp + '/' + goods_name + '/dp/(.*?)/'
+                    else:
+                        asin_pat = 'https://www.amazon.' + mkp + '/' + 'dp/(.*?)/'
+                    asin = re.findall(asin_pat, url)[0]
+
+                    simple_url = mk + mkp + '/dp/' + asin
+
+                    # 根据匹配到的市场名进行对国家编号进行修改
+                    if mkp == 'com':
+                        mkp = 'us'
+                    elif mkp == 'co.uk':
+                        mkp = 'uk'
+                    elif mkp == 'co.jp':
+                        mkp = 'jp'
+
+                    # 要抓取亚马逊页面信息
+                    # brand = get_product_info(url, asin)
+
+                    pd_info = Amazon.query.filter_by(asin=asin, market=mkp).all()
+                    if not pd_info:
+                        add_good = Amazon(asin=asin, goods_name=goods_name, market=mkp, url=simple_url,
+                                          spider_time=time.strftime('%Y-%m-%d', time.localtime()),
+                                          user_id=g.user.user_id)
+                        db.session.add(add_good)
+                        db.session.commit()
+                        # print('添加1')
+
+                    else:
+                        for pd in pd_info:
+                            if pd.market != mkp:
+                                add_good = Amazon(asin=asin, goods_name=goods_name, market=mkp, url=simple_url,
+                                                  spider_time=time.strftime('%Y-%m-%d', time.localtime()),
+                                                  user_id=g.user.user_id)
+                                db.session.add(add_good)
+                                db.session.commit()
+                                # print('添加2')
+                            else:
+                                print('-------------')
+                                add_msg[0]['msg'] = '添加失败，产品已在列表中'
+                    return render_template('single_product/add_product.html', user=g.user, add_msg=add_msg)
                 else:
-                    asin_pat = 'https://www.amazon.' + mkp + '/' + 'dp/(.*?)/'
-                asin = re.findall(asin_pat, url)[0]
-
-                simple_url = mk + mkp + '/dp/' + asin
-
-                # 根据匹配到的市场名进行对国家编号进行修改
-                if mkp == 'com':
-                    mkp = 'us'
-                elif mkp == 'co.uk':
-                    mkp = 'uk'
-                elif mkp == 'co.jp':
-                    mkp = 'jp'
-
-                # 要抓取亚马逊页面信息
-                # brand = get_product_info(url, asin)
-
-                pd_info = Amazon.query.filter_by(asin=asin, market=mkp).all()
-                if not pd_info:
-                    add_good = Amazon(asin=asin, goods_name=goods_name, market=mkp, url=simple_url,
-                                      spider_time=time.strftime('%Y-%m-%d', time.localtime()),
-                                      user_id=g.user.user_id)
-                    db.session.add(add_good)
-                    db.session.commit()
-                    # print('添加1')
-
-                else:
-                    for pd in pd_info:
-                        if pd.market != mkp:
-                            add_good = Amazon(asin=asin, goods_name=goods_name, market=mkp, url=simple_url,
-                                              spider_time=time.strftime('%Y-%m-%d', time.localtime()),
-                                              user_id=g.user.user_id)
-                            db.session.add(add_good)
-                            db.session.commit()
-                            # print('添加2')
-                        else:
-                            print('-------------')
-                            add_msg[0]['msg'] = '添加失败，产品已在列表中'
-                return render_template('single_product/add_product.html', user=g.user, add_msg=add_msg)
-            else:
-                add_msg[0]['msg'] = '添加失败，请检查填入的链接是否正确'  # 这个地方还有问题，实际上添加成功了，但是提示的是这句话
-        return render_template('single_product/add_product.html', user=g.user, add_msg=add_msg)
+                    add_msg[0]['msg'] = '添加失败，请检查填入的链接是否正确'  # 这个地方还有问题，实际上添加成功了，但是提示的是这句话
+            return render_template('single_product/add_product.html', user=g.user, add_msg=add_msg)
+        else:
+            add_msg[0]['msg'] = '添加失败，请输入产品链接'
+            return render_template('single_product/add_product.html', user=g.user, add_msg=add_msg)
 
     return render_template('single_product/add_product.html', user=g.user)
 
@@ -252,7 +258,7 @@ def add_by_sheet():
         #         add_msg[0]['msg'] = '添加失败，请检查填入的链接是否正确'  # 这个地方还有问题，实际上添加成功了，但是提示的是这句话
         # return render_template('single_product/add_product.html', user=g.user, add_msg=add_msg)
         msg = '批量添加完成，成功添加' + str(i) + '个' + ';添加失败' + str(len(urls) - i) + '个'
-    return render_template('single_product/add_product.html', msg)
+        return Response(json.dumps(msg))
 
 
 @sp_bp.route('/trace_pds', methods=['GET', 'POST'])
@@ -286,19 +292,21 @@ def trace_pds():
         mkp_url_list.append(di)
         asin_list.append(pd_info.asin)
 
-    executor.submit(write_to_db,mkp_url_list,asin_list)
-    # write_to_db(mkp_url_list,asin_list)
+    # executor.submit(write_to_db, mkp_url_list, asin_list)
+    write_to_db(mkp_url_list,asin_list)
     pd_lst = Amazon.query.filter_by(user_id=g.user.user_id).all()
     return render_template('single_product/product_page.html', user=g.user, pd_lst=pd_lst)
 
-def get_pds_info(mkp_url_list,asin_list):
+
+def get_pds_info(mkp_url_list, asin_list):
     get_pd_infos = EU_trace_pd(mkp_url_list, asin_list)
 
     return get_pd_infos
     # 传回来的值是一个包含多个产品信息的列表，需要再修改
 
-def write_to_db(mkp_url_list,asin_list):
-    get_pd_infos = get_pds_info(mkp_url_list,asin_list)
+
+def write_to_db(mkp_url_list, asin_list):
+    get_pd_infos = get_pds_info(mkp_url_list, asin_list)
     print(get_pd_infos)
 
     for get_pd_info in get_pd_infos:
@@ -320,7 +328,6 @@ def write_to_db(mkp_url_list,asin_list):
         if pd_infos.goods_name == '':
             pd_infos.goods_name = get_pd_info[7]
             db.session.commit()
-
 
 
 @sp_bp.route('/query', methods=['GET', 'POST'])
@@ -470,15 +477,15 @@ def put_files(file):
     return send_from_directory(APP_STATIC, file, as_attachment=True)
 
 
-@sp_bp.route('/create_chart', methods=['GET','POST'])
+@sp_bp.route('/create_chart', methods=['GET', 'POST'])
 def create_chart():
-    if request.method=='POST':
+    if request.method == 'POST':
         asins = request.form.get('asins')
         date = request.form.get('date')
         mkp = request.form.get('mkp')
         if asins:
             for asin in json.loads(asins):
-                pd = Amazon.query.filter_by(asin=asin,market=json.loads(mkp),user_id=g.user.user_id)
+                pd = Amazon.query.filter_by(asin=asin, market=json.loads(mkp), user_id=g.user.user_id)
     return render_template('single_product/test1.html')
 
 
@@ -492,10 +499,8 @@ def get_asins_chart():
         if pd_lst:
             for pd in pd_lst:
                 dic = {}
-                dic['asin'] = pd.asin    #最好把ID传过去，不然到时候获取asin销量的时候会有问题
+                dic['asin'] = pd.asin  # 最好把ID传过去，不然到时候获取asin销量的时候会有问题
                 lst.append(dic)
             return Response(json.dumps(lst))
         else:
             return Response(json.dumps([{'msg': '无查询结果'}]))
-
-

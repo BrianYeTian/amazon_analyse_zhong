@@ -1,0 +1,860 @@
+var length;         //子数据的个数
+    var currentPage;    //当前页数
+    var totalPage;      //总页数
+    var pageSize;       //每页显示的json数据个数
+    var listbox = 'list-content'
+    /*加载页面时运行*/
+
+    $(function () {
+     //进行获取json数据
+        $.ajax({
+            type:"post",
+            url:'{{ url_for('sp_bp.dp') }}',
+            dataType:"json",
+            success:function (data) {
+                //alert(data.values)
+                //console.log(data.values);
+                length=Object.keys(data.values).length;
+                //console.log(length);
+                //向表格中添加数据
+                addTable(data);
+                $('#count_num').append(
+                    "您当前已经添加的产品数量为："+"<span style='color: red'>"+length+"个</span>"
+                );
+            },
+            error:function (data) {
+                alert("获取数据失败！");
+            }
+
+        });
+
+
+        function addTable(data) {
+            $.each(data,function (i,item) {
+                //进行二次遍历json数据
+                $.each(item,function (j,item1) {
+                    //向表格中动态添加数据
+                    $("#tbody").append(
+                        "<tr>"+
+                            "<td>"+"<input type='checkbox' name='checkItem' value='"+item1.id+"'>"+"</td>"+
+                            "<td><a href="+item1.url+" target='_blank'>"+item1.asin+"</a></td>"+
+                            "<td>"+item1.market+"</td>"+
+                            "<td style='text-align: center; max-width: 200px; overflow:hidden; text-overflow: ellipsis; white-space: nowrap'>"+item1.goods_name+"</td>"+
+                            "<td>"+item1.time+"</td>"+
+                            "<td>"+"</td>"+
+                            "<td>"+"<a href='javascript:;' onclick=query("+item1.id+")>查看 </a>"
+                                  +"<a href='javascript:;' onclick=get("+item1.id+")>  抓取信息 </a>"
+                                  +"<a href='javascript:;' onclick=del("+item1.id+")> 删除</a>"
+                            +"</td>"+
+                        "</tr>"
+                    );
+                });
+            });
+            goPAge(1,10);
+            //下拉列表选中的值进行分页
+            $("#jumpPage").bind("change",function () {
+                let options=$("#jumpPage option:selected");
+                if (options.val()=='all'){
+                    pdnum = length;
+                }else {
+                    pdnum = options.val();
+                }
+                goPAge(1,pdnum);
+                //console.log(options.val());
+            });
+        }
+
+
+     });
+
+    /**进行分页函数
+     * pno--页数
+     * psize--每页显示记录数
+     * 分页部分是从真实数据行开始，因而存在加减某个常数，以确定真正的记录数
+     * 纯js分页的实质是数据行全部加载，通过是否显示属性完成分页功能
+     * */
+    function goPAge(pno,psize) {
+        //全部的记录数
+        let num=length;
+        //console.log(length)
+        //console.log(num);
+        //总页数
+        totalPage=0;
+        //每页显示的个数
+        pageSize=psize;
+        //计算总个数来进行分多少页
+        if(num/pageSize>parseInt(num/pageSize)){
+            totalPage=parseInt(num/pageSize)+1;
+        }else{
+            totalPage=parseInt(num/pageSize);
+        }
+        //打印总页数
+        console.log("总页数为："+totalPage);
+        //当前页数
+        currentPage=pno;
+        //打印当前页
+        console.log("当前页为："+currentPage);
+        //开始显示的个数1
+        let startRow=pageSize*(currentPage-1)+1;
+        //结束显示的个数4
+        let endRow=currentPage*pageSize;
+        //按照个数计算结束页的是哪一个个数
+        endRow=(endRow>num)?num:endRow;
+        //console.log(endRow);
+        //所有行隐藏
+        $("#list-content tr").hide();
+        //显示一页的行数
+        for(let i=startRow-1;i<=endRow;i++){
+            $("#list-content tr").eq(i).show();
+        }
+        //右下角显示
+        let nums = num
+        let tempStr=startRow+"-"+endRow+"\t"+"共"+nums+"条";
+        document.getElementById("tempStr").innerText=tempStr;
+
+        document.getElementById("pno").innerText=currentPage;
+
+        let all_page="共"+totalPage+"页";
+        document.getElementById("all_page").innerText=all_page;
+    }
+    /*分页结束*/
+    //首页 上一页 下一页 尾页图标按作用
+    //首页
+    function first_page_click() {
+        if(currentPage>1){
+            goPAge(1,pageSize);
+        }else{
+            console.log("目前是第一页");
+        }
+    }
+    //上一页
+    function left_page_click() {
+        if(currentPage>1){
+            goPAge(currentPage-1,pageSize);
+        }else{
+            console.log("目前是第一页");
+        }
+    }
+    //下一页
+    function right_page_click() {
+        if(currentPage<totalPage){
+            goPAge(currentPage+1,pageSize);
+        }else{
+            console.log("目前是最后一页");
+        }
+    }
+    //尾页
+    function end_page_click() {
+        if(currentPage<totalPage){
+            goPAge(totalPage,pageSize);
+        }else{
+            console.log("目前是最后一页");
+        }
+    }
+
+
+
+//删除之后更新数据
+    function del(asin) {
+        //alert(asin)
+        if (!confirm("确定删除吗？")) {
+                return;
+            }
+
+        $.ajax({
+            url: '{{ url_for('sp_bp.del_asin') }}',
+            data: {'asin':asin},
+            type: 'post',
+            dataType: 'json',
+            success:function (data){
+                //console.log(data.values);
+                length = Object.keys(data.values).length
+                $('#count_num').empty();
+                $('#count_num').append(
+                    "您当前已经添加的产品数量为："+"<span style='color: red'>"+length+"个</span>"
+                );
+                //let xtb = document.getElementById('list-content').getElementsByTagName('tr').length
+                //console.log(xtb)
+                $("#tbody").find("tr").remove();
+
+                $.each(data,function (i,item) {
+                    //进行二次遍历json数据
+                    $.each(item,function (j,item1) {
+                        //console.log(item1)
+                        //向表格中动态添加数据
+                        $("#tbody").append(
+                            "<tr>"+
+                                "<td>"+"<input type='checkbox' name='checkItem' value='"+item1.id+"'>"+"</td>"+
+                                "<td><a href="+item1.url+" target='_blank'>"+item1.asin+"</a></td>"+
+                                "<td>"+item1.market+"</td>"+
+                                "<td style='text-align: center; max-width: 200px; overflow:hidden; text-overflow: ellipsis; white-space: nowrap'>"+item1.goods_name+"</td>"+
+                                "<td>"+item1.time+"</td>"+
+                                "<td>"+"</td>"+
+                                "<td>"+"<a href='javascript:;' onclick=query("+item1.id+")>查看 </a>"
+                                      +"<a href='javascript:;' onclick=get("+item1.id+")>  抓取信息 </a>"
+                                      +"<a href='javascript:;' onclick=del("+item1.id+")> 删除</a>"
+                                +"</td>"+
+                            "</tr>"
+                        );
+                    });
+                });
+
+                let options=$("#jumpPage option:selected");
+                //console.log(options.val())
+                if (options.val()=='all'){
+                    pdnum = length;
+                }else {
+                    pdnum = options.val();
+                }
+                goPAge(1,pdnum);
+            }
+        })
+    }
+
+
+    //筛选
+    $('#mkp').bind('change',function () {
+        let opt = $('#mkp option:selected');
+        let mkp = $('#mkp').val();
+        //console.log(mkp)
+        $.ajax({
+            type:'post',
+            url:'{{ url_for('sp_bp.filter') }}',
+            data:{'mkp':mkp},
+            dataType:'json',
+            success:function (data) {
+                console.log(data.values);
+                length = Object.keys(data.values).length
+                $('#count_num').empty();
+                $('#count_num').append(
+                    "您当前已经添加的产品数量为："+"<span style='color: red'>"+length+"个</span>"
+                );
+                //let xtb = document.getElementById('list-content').getElementsByTagName('tr').length
+                //console.log(xtb)
+                $("#tbody").find("tr").remove();
+                //let xtbb = document.getElementById('list-content').getElementsByTagName('tr').length
+                //console.log(xtbb)
+                $.each(data,function (i,item) {
+                    //进行二次遍历json数据
+                    $.each(item,function (j,item1) {
+                        //console.log(item1)
+                        //向表格中动态添加数据
+                        $("#tbody").append(
+                            "<tr>"+
+                                "<td>"+"<input type='checkbox' name='checkItem' value='"+item1.id+"'>"+"</td>"+
+                                "<td><a href="+item1.url+" target='_blank'>"+item1.asin+"</a></td>"+
+                                "<td>"+item1.market+"</td>"+
+                                "<td style='text-align: center; max-width: 200px; overflow:hidden; text-overflow: ellipsis; white-space: nowrap'>"+item1.goods_name+"</td>"+
+                                "<td>"+item1.time+"</td>"+
+                                "<td>"+"</td>"+
+                                "<td>"+"<a href='javascript:;' onclick=query("+item1.id+")>查看 </a>"
+                                      +"<a href='javascript:;' onclick=get("+item1.id+")>  抓取信息 </a>"
+                                      +"<a href='javascript:;' onclick=del("+item1.id+")> 删除</a>"
+                                +"</td>"+
+                            "</tr>"
+                        );
+                    });
+                    //let num = $('#tbody').find('tr').length
+                    //console.log(num)
+                });
+
+                let options=$("#jumpPage option:selected");
+                //console.log(options.val())
+                if (options.val()=='all'){
+                    pdnum = length;
+                }else {
+                    pdnum = options.val();
+                }
+                goPAge(1,pdnum);
+            }
+        })
+    })
+
+
+<style>
+    .table tr>th {
+            text-align: center;
+        }
+
+       .page {
+           height: 50px;
+           width: 100%;
+           background-color: #ffffff;
+           opacity: 0.5;
+       }
+
+        .page table{
+            width: 100%;
+            height: 100%;
+        }
+
+        .page table tr{
+            width: 100%;
+            height: 100%;
+        }
+         .page table tr>td{
+             width: 32%;
+             height: 100%;
+             border: 1px solid #ffffff;
+         }
+        .td_body{
+            vertical-align: middle;
+        }
+       p#tempStr {
+           float: right;
+           text-align: center;
+           line-height: 4;
+           margin-right: 23px;
+       }
+        .td_body ul{
+            list-style: none;
+            display: flex;
+            vertical-align: middle;
+        }
+
+        .td_body ul>li{
+            display: table-footer-group;
+            text-align: center;
+            width: 12%;
+            line-height: 5px;
+        }
+
+        .td_body ul li >p{
+            line-height: 16px;
+        }
+
+        .tbody tr >td{
+            text-align: center;
+        }
+</style>
+
+<script>
+    function query(asin) {
+        location.href = '/query?asin=' + asin
+    }
+    function get(asin) {
+        location.href = '/trace_pds?asin=' + asin
+        alert('正在爬取数据，请稍候......')
+    }
+
+
+
+
+    $(document).ready(function()
+    {
+        //全选
+        $("#checkAll").click(function(){
+            $("[name=checkItem]:checkbox").prop("checked",this.checked);
+        });
+
+        //复选框组的联动效果
+        $("[name=checkItem]:checkbox").click(function(){
+            var flag = true;
+            $("[name=checkItem]:checkbox").each(function(){
+                if(!this.checked)
+                {
+                    flag = false;
+                }
+            });
+            $("#checkAll").prop("checked",flag);
+        });
+
+        //反选
+        $("#btnCheckedRev").click(function(){
+            $("[name=checkItem]:checkbox").each(function(){
+                this.checked = !this.checked;
+            });
+        });
+
+        //提交
+        $("#btnSubmit").click(function(){
+            var idArray = new Array(); //用户ID数组
+            $("[name=checkItem]:checkbox:checked").each(function(){
+                idArray.push($(this).val());
+            });
+            if(idArray.length==0)
+            {
+                alert("请选择至少一个产品！");
+                return;
+            }
+
+            if (!confirm("确定提交记录吗？")) {
+                return;
+            }
+
+            //执行Ajax请求
+            $.ajax({
+                type: "POST",
+                url: "{{ url_for('sp_bp.trace_pds') }}",
+                data:{
+                    asins:JSON.stringify(idArray)
+                },
+                success: function(result) {
+                    alert('抓取完成，请点击"查看"查询详细信息')
+                }
+            });
+        });
+    });
+
+    </script>
+
+
+
+
+没用的数据
+{#                    <tr>#}
+{#                        <td>Tiger Nixon</td>#}
+{#                        <td>System Architect</td>#}
+{#                        <td>Edinburgh</td>#}
+{#                        <td>61</td>#}
+{#                        <td>2011/04/25</td>#}
+{#                        <td>$320,800</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Garrett Winters</td>#}
+{#                        <td>Accountant</td>#}
+{#                        <td>Tokyo</td>#}
+{#                        <td>63</td>#}
+{#                        <td>2011/07/25</td>#}
+{#                        <td>$170,750</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Ashton Cox</td>#}
+{#                        <td>Junior Technical Author</td>#}
+{#                        <td>San Francisco</td>#}
+{#                        <td>66</td>#}
+{#                        <td>2009/01/12</td>#}
+{#                        <td>$86,000</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Cedric Kelly</td>#}
+{#                        <td>Senior Javascript Developer</td>#}
+{#                        <td>Edinburgh</td>#}
+{#                        <td>22</td>#}
+{#                        <td>2012/03/29</td>#}
+{#                        <td>$433,060</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Airi Satou</td>#}
+{#                        <td>Accountant</td>#}
+{#                        <td>Tokyo</td>#}
+{#                        <td>33</td>#}
+{#                        <td>2008/11/28</td>#}
+{#                        <td>$162,700</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Brielle Williamson</td>#}
+{#                        <td>Integration Specialist</td>#}
+{#                        <td>New York</td>#}
+{#                        <td>61</td>#}
+{#                        <td>2012/12/02</td>#}
+{#                        <td>$372,000</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Herrod Chandler</td>#}
+{#                        <td>Sales Assistant</td>#}
+{#                        <td>San Francisco</td>#}
+{#                        <td>59</td>#}
+{#                        <td>2012/08/06</td>#}
+{#                        <td>$137,500</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Rhona Davidson</td>#}
+{#                        <td>Integration Specialist</td>#}
+{#                        <td>Tokyo</td>#}
+{#                        <td>55</td>#}
+{#                        <td>2010/10/14</td>#}
+{#                        <td>$327,900</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Colleen Hurst</td>#}
+{#                        <td>Javascript Developer</td>#}
+{#                        <td>San Francisco</td>#}
+{#                        <td>39</td>#}
+{#                        <td>2009/09/15</td>#}
+{#                        <td>$205,500</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Sonya Frost</td>#}
+{#                        <td>Software Engineer</td>#}
+{#                        <td>Edinburgh</td>#}
+{#                        <td>23</td>#}
+{#                        <td>2008/12/13</td>#}
+{#                        <td>$103,600</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Jena Gaines</td>#}
+{#                        <td>Office Manager</td>#}
+{#                        <td>London</td>#}
+{#                        <td>30</td>#}
+{#                        <td>2008/12/19</td>#}
+{#                        <td>$90,560</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Quinn Flynn</td>#}
+{#                        <td>Support Lead</td>#}
+{#                        <td>Edinburgh</td>#}
+{#                        <td>22</td>#}
+{#                        <td>2013/03/03</td>#}
+{#                        <td>$342,000</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Charde Marshall</td>#}
+{#                        <td>Regional Director</td>#}
+{#                        <td>San Francisco</td>#}
+{#                        <td>36</td>#}
+{#                        <td>2008/10/16</td>#}
+{#                        <td>$470,600</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Haley Kennedy</td>#}
+{#                        <td>Senior Marketing Designer</td>#}
+{#                        <td>London</td>#}
+{#                        <td>43</td>#}
+{#                        <td>2012/12/18</td>#}
+{#                        <td>$313,500</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Tatyana Fitzpatrick</td>#}
+{#                        <td>Regional Director</td>#}
+{#                        <td>London</td>#}
+{#                        <td>19</td>#}
+{#                        <td>2010/03/17</td>#}
+{#                        <td>$385,750</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Michael Silva</td>#}
+{#                        <td>Marketing Designer</td>#}
+{#                        <td>London</td>#}
+{#                        <td>66</td>#}
+{#                        <td>2012/11/27</td>#}
+{#                        <td>$198,500</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Paul Byrd</td>#}
+{#                        <td>Chief Financial Officer (CFO)</td>#}
+{#                        <td>New York</td>#}
+{#                        <td>64</td>#}
+{#                        <td>2010/06/09</td>#}
+{#                        <td>$725,000</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Gloria Little</td>#}
+{#                        <td>Systems Administrator</td>#}
+{#                        <td>New York</td>#}
+{#                        <td>59</td>#}
+{#                        <td>2009/04/10</td>#}
+{#                        <td>$237,500</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Bradley Greer</td>#}
+{#                        <td>Software Engineer</td>#}
+{#                        <td>London</td>#}
+{#                        <td>41</td>#}
+{#                        <td>2012/10/13</td>#}
+{#                        <td>$132,000</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Dai Rios</td>#}
+{#                        <td>Personnel Lead</td>#}
+{#                        <td>Edinburgh</td>#}
+{#                        <td>35</td>#}
+{#                        <td>2012/09/26</td>#}
+{#                        <td>$217,500</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Jenette Caldwell</td>#}
+{#                        <td>Development Lead</td>#}
+{#                        <td>New York</td>#}
+{#                        <td>30</td>#}
+{#                        <td>2011/09/03</td>#}
+{#                        <td>$345,000</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Yuri Berry</td>#}
+{#                        <td>Chief Marketing Officer (CMO)</td>#}
+{#                        <td>New York</td>#}
+{#                        <td>40</td>#}
+{#                        <td>2009/06/25</td>#}
+{#                        <td>$675,000</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Caesar Vance</td>#}
+{#                        <td>Pre-Sales Support</td>#}
+{#                        <td>New York</td>#}
+{#                        <td>21</td>#}
+{#                        <td>2011/12/12</td>#}
+{#                        <td>$106,450</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Doris Wilder</td>#}
+{#                        <td>Sales Assistant</td>#}
+{#                        <td>Sidney</td>#}
+{#                        <td>23</td>#}
+{#                        <td>2010/09/20</td>#}
+{#                        <td>$85,600</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Angelica Ramos</td>#}
+{#                        <td>Chief Executive Officer (CEO)</td>#}
+{#                        <td>London</td>#}
+{#                        <td>47</td>#}
+{#                        <td>2009/10/09</td>#}
+{#                        <td>$1,200,000</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Gavin Joyce</td>#}
+{#                        <td>Developer</td>#}
+{#                        <td>Edinburgh</td>#}
+{#                        <td>42</td>#}
+{#                        <td>2010/12/22</td>#}
+{#                        <td>$92,575</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Jennifer Chang</td>#}
+{#                        <td>Regional Director</td>#}
+{#                        <td>Singapore</td>#}
+{#                        <td>28</td>#}
+{#                        <td>2010/11/14</td>#}
+{#                        <td>$357,650</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Brenden Wagner</td>#}
+{#                        <td>Software Engineer</td>#}
+{#                        <td>San Francisco</td>#}
+{#                        <td>28</td>#}
+{#                        <td>2011/06/07</td>#}
+{#                        <td>$206,850</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Fiona Green</td>#}
+{#                        <td>Chief Operating Officer (COO)</td>#}
+{#                        <td>San Francisco</td>#}
+{#                        <td>48</td>#}
+{#                        <td>2010/03/11</td>#}
+{#                        <td>$850,000</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Shou Itou</td>#}
+{#                        <td>Regional Marketing</td>#}
+{#                        <td>Tokyo</td>#}
+{#                        <td>20</td>#}
+{#                        <td>2011/08/14</td>#}
+{#                        <td>$163,000</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Michelle House</td>#}
+{#                        <td>Integration Specialist</td>#}
+{#                        <td>Sidney</td>#}
+{#                        <td>37</td>#}
+{#                        <td>2011/06/02</td>#}
+{#                        <td>$95,400</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Suki Burks</td>#}
+{#                        <td>Developer</td>#}
+{#                        <td>London</td>#}
+{#                        <td>53</td>#}
+{#                        <td>2009/10/22</td>#}
+{#                        <td>$114,500</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Prescott Bartlett</td>#}
+{#                        <td>Technical Author</td>#}
+{#                        <td>London</td>#}
+{#                        <td>27</td>#}
+{#                        <td>2011/05/07</td>#}
+{#                        <td>$145,000</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Gavin Cortez</td>#}
+{#                        <td>Team Leader</td>#}
+{#                        <td>San Francisco</td>#}
+{#                        <td>22</td>#}
+{#                        <td>2008/10/26</td>#}
+{#                        <td>$235,500</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Martena Mccray</td>#}
+{#                        <td>Post-Sales support</td>#}
+{#                        <td>Edinburgh</td>#}
+{#                        <td>46</td>#}
+{#                        <td>2011/03/09</td>#}
+{#                        <td>$324,050</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Unity Butler</td>#}
+{#                        <td>Marketing Designer</td>#}
+{#                        <td>San Francisco</td>#}
+{#                        <td>47</td>#}
+{#                        <td>2009/12/09</td>#}
+{#                        <td>$85,675</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Howard Hatfield</td>#}
+{#                        <td>Office Manager</td>#}
+{#                        <td>San Francisco</td>#}
+{#                        <td>51</td>#}
+{#                        <td>2008/12/16</td>#}
+{#                        <td>$164,500</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Hope Fuentes</td>#}
+{#                        <td>Secretary</td>#}
+{#                        <td>San Francisco</td>#}
+{#                        <td>41</td>#}
+{#                        <td>2010/02/12</td>#}
+{#                        <td>$109,850</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Vivian Harrell</td>#}
+{#                        <td>Financial Controller</td>#}
+{#                        <td>San Francisco</td>#}
+{#                        <td>62</td>#}
+{#                        <td>2009/02/14</td>#}
+{#                        <td>$452,500</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Timothy Mooney</td>#}
+{#                        <td>Office Manager</td>#}
+{#                        <td>London</td>#}
+{#                        <td>37</td>#}
+{#                        <td>2008/12/11</td>#}
+{#                        <td>$136,200</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Jackson Bradshaw</td>#}
+{#                        <td>Director</td>#}
+{#                        <td>New York</td>#}
+{#                        <td>65</td>#}
+{#                        <td>2008/09/26</td>#}
+{#                        <td>$645,750</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Olivia Liang</td>#}
+{#                        <td>Support Engineer</td>#}
+{#                        <td>Singapore</td>#}
+{#                        <td>64</td>#}
+{#                        <td>2011/02/03</td>#}
+{#                        <td>$234,500</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Bruno Nash</td>#}
+{#                        <td>Software Engineer</td>#}
+{#                        <td>London</td>#}
+{#                        <td>38</td>#}
+{#                        <td>2011/05/03</td>#}
+{#                        <td>$163,500</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Sakura Yamamoto</td>#}
+{#                        <td>Support Engineer</td>#}
+{#                        <td>Tokyo</td>#}
+{#                        <td>37</td>#}
+{#                        <td>2009/08/19</td>#}
+{#                        <td>$139,575</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Thor Walton</td>#}
+{#                        <td>Developer</td>#}
+{#                        <td>New York</td>#}
+{#                        <td>61</td>#}
+{#                        <td>2013/08/11</td>#}
+{#                        <td>$98,540</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Finn Camacho</td>#}
+{#                        <td>Support Engineer</td>#}
+{#                        <td>San Francisco</td>#}
+{#                        <td>47</td>#}
+{#                        <td>2009/07/07</td>#}
+{#                        <td>$87,500</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Serge Baldwin</td>#}
+{#                        <td>Data Coordinator</td>#}
+{#                        <td>Singapore</td>#}
+{#                        <td>64</td>#}
+{#                        <td>2012/04/09</td>#}
+{#                        <td>$138,575</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Zenaida Frank</td>#}
+{#                        <td>Software Engineer</td>#}
+{#                        <td>New York</td>#}
+{#                        <td>63</td>#}
+{#                        <td>2010/01/04</td>#}
+{#                        <td>$125,250</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Zorita Serrano</td>#}
+{#                        <td>Software Engineer</td>#}
+{#                        <td>San Francisco</td>#}
+{#                        <td>56</td>#}
+{#                        <td>2012/06/01</td>#}
+{#                        <td>$115,000</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Jennifer Acosta</td>#}
+{#                        <td>Junior Javascript Developer</td>#}
+{#                        <td>Edinburgh</td>#}
+{#                        <td>43</td>#}
+{#                        <td>2013/02/01</td>#}
+{#                        <td>$75,650</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Cara Stevens</td>#}
+{#                        <td>Sales Assistant</td>#}
+{#                        <td>New York</td>#}
+{#                        <td>46</td>#}
+{#                        <td>2011/12/06</td>#}
+{#                        <td>$145,600</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Hermione Butler</td>#}
+{#                        <td>Regional Director</td>#}
+{#                        <td>London</td>#}
+{#                        <td>47</td>#}
+{#                        <td>2011/03/21</td>#}
+{#                        <td>$356,250</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Lael Greer</td>#}
+{#                        <td>Systems Administrator</td>#}
+{#                        <td>London</td>#}
+{#                        <td>21</td>#}
+{#                        <td>2009/02/27</td>#}
+{#                        <td>$103,500</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Jonas Alexander</td>#}
+{#                        <td>Developer</td>#}
+{#                        <td>San Francisco</td>#}
+{#                        <td>30</td>#}
+{#                        <td>2010/07/14</td>#}
+{#                        <td>$86,500</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Shad Decker</td>#}
+{#                        <td>Regional Director</td>#}
+{#                        <td>Edinburgh</td>#}
+{#                        <td>51</td>#}
+{#                        <td>2008/11/13</td>#}
+{#                        <td>$183,000</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Michael Bruce</td>#}
+{#                        <td>Javascript Developer</td>#}
+{#                        <td>Singapore</td>#}
+{#                        <td>29</td>#}
+{#                        <td>2011/06/27</td>#}
+{#                        <td>$183,000</td>#}
+{#                    </tr>#}
+{#                    <tr>#}
+{#                        <td>Donna Snider</td>#}
+{#                        <td>Customer Support</td>#}
+{#                        <td>New York</td>#}
+{#                        <td>27</td>#}
+{#                        <td>2011/01/25</td>#}
+{#                        <td>$112,000</td>#}
+{#                    </tr>#}
