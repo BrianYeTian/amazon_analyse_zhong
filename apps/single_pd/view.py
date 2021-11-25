@@ -294,7 +294,7 @@ def trace_pds():
 
     # executor.submit(write_to_db, mkp_url_list, asin_list)
     write_to_db(mkp_url_list,asin_list)
-    pd_lst = Amazon.query.filter_by(user_id=g.user.user_id).all()
+    pd_lst = Amazon.query.filter_by(user_id=g.user.user_id).all() #备注
     return render_template('single_product/product_page.html', user=g.user, pd_lst=pd_lst)
 
 
