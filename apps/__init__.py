@@ -4,8 +4,9 @@ import settings
 from apps.catelog.view import cate_bp
 from apps.single_pd.view import sp_bp
 from apps.user.view import user_bp
-from exts import db, bootstrap
+from exts import db, bootstrap, schedule
 from apps.search_result.view import sr_bp
+from datetime import datetime
 
 
 def create_app():
@@ -17,4 +18,9 @@ def create_app():
     app.register_blueprint(user_bp)
     app.register_blueprint(cate_bp)
     app.register_blueprint(sr_bp)
+
+    app.config['SCHEDULER_API_ENABLED']=True
+    # schedule.init_app(app)
+
     return app
+

@@ -13,6 +13,7 @@ class Amazon(db.Model):
     # brand = db.Column(db.String(20), nullable=False)
     # release_date = db.Column(db.DateTime, default='')
     url = db.Column(db.String(500), nullable=False)
+    operation = db.Column(db.String(100),default="")
     spider_time = db.Column(db.String(10), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('tb_user.user_id'), nullable=False)
     user = db.relationship('User', backref='pd_info')

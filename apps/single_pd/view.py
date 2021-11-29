@@ -10,6 +10,7 @@ import sqlalchemy
 import xlrd
 import xlwt as xlwt
 from flask import Blueprint, request, session, render_template, g, Response, url_for, make_response, send_from_directory
+from flask_apscheduler import scheduler
 from flask_login import current_user
 from werkzeug.utils import redirect
 
@@ -21,7 +22,7 @@ from apps.single_pd.product_info import get_product_info
 from apps.single_pd.trace_pd import pd_trace
 from apps.user.model import User
 from apps.user.view import user_bp, g
-from exts import db
+from exts import db, schedule
 from settings import APP_STATIC
 from concurrent.futures import ThreadPoolExecutor
 
@@ -29,10 +30,10 @@ sp_bp = Blueprint('sp_bp', __name__)
 
 before_request_list = ['/dp/get_review', '/dp', '/add_pd', '/query', '/query_all', '/query_by',
                        '/trace_pds', '/del', '/select_asin', 'review_download/delete', '/get_review_download',
-                       '/review_download', '/add_by_sheet', '/filter', '/get_asins_chart']
+                       '/review_download', '/add_by_sheet', '/filter', '/get_asins_chart', '/get_cart']
 
 executor = ThreadPoolExecutor()
-
+schedule.start()
 
 @user_bp.before_app_request
 def before_req():
@@ -52,7 +53,7 @@ def dp():
         lst = []
         dics = {}
 
-        pd_lst = Amazon.query.filter_by(user_id=g.user.user_id).all()
+        pd_lst = Amazon.query.filter_by(user_id=g.user.user_id, operation="").all()
         for pd in pd_lst:
             dic = {}
             dic['id'] = pd.product_id
@@ -68,7 +69,7 @@ def dp():
         # print(json.dumps(dics))
         return Response(json.dumps(dics))
     else:
-        pd_lst = Amazon.query.filter_by(user_id=g.user.user_id).all()
+        pd_lst = Amazon.query.filter_by(user_id=g.user.user_id,operation="").all()
         print(len(pd_lst))
         return render_template('single_product/product_page.html', user=g.user, pd_lst=pd_lst)
 
@@ -147,7 +148,7 @@ def add():
                     # 要抓取亚马逊页面信息
                     # brand = get_product_info(url, asin)
 
-                    pd_info = Amazon.query.filter_by(asin=asin, market=mkp).all()
+                    pd_info = Amazon.query.filter_by(asin=asin, market=mkp, operation="").all()
                     if not pd_info:
                         add_good = Amazon(asin=asin, goods_name=goods_name, market=mkp, url=simple_url,
                                           spider_time=time.strftime('%Y-%m-%d', time.localtime()),
@@ -293,8 +294,8 @@ def trace_pds():
         asin_list.append(pd_info.asin)
 
     # executor.submit(write_to_db, mkp_url_list, asin_list)
-    write_to_db(mkp_url_list,asin_list)
-    pd_lst = Amazon.query.filter_by(user_id=g.user.user_id).all() #备注
+    write_to_db(mkp_url_list, asin_list)
+    pd_lst = Amazon.query.filter_by(user_id=g.user.user_id).all()  # 备注
     return render_template('single_product/product_page.html', user=g.user, pd_lst=pd_lst)
 
 
@@ -504,3 +505,66 @@ def get_asins_chart():
             return Response(json.dumps(lst))
         else:
             return Response(json.dumps([{'msg': '无查询结果'}]))
+
+
+@sp_bp.route('/get_cart', methods=['GET', 'POST'])
+def get_cart():
+    if request.method == 'POST':
+        add_msg = [{'msg': '添加成功'}]
+        pd_url = request.form.get('pd_url')
+        if pd_url:
+            if 'https://www.amazon.' in pd_url:
+                if pd_url[-1] != '/':
+                    pd_url = pd_url + '/'
+
+                try:
+                    goods_name = re.findall(r'https://www.amazon.[\s\S]*?/(.*?)/dp', pd_url)[0]
+                except:
+                    goods_name = ''
+
+                mkp = re.findall(r'https://www.amazon.(.*?)/', pd_url)[0]
+                if goods_name:
+                    asin_pat = 'https://www.amazon.' + mkp + '/' + goods_name + '/dp/(.*?)/'
+                else:
+                    asin_pat = 'https://www.amazon.' + mkp + '/' + 'dp/(.*?)/'
+                asin = re.findall(asin_pat, pd_url)[0]
+
+                simple_url = 'https://www.amazon.' + mkp + '/dp/' + asin
+
+                # 根据匹配到的市场名进行对国家编号进行修改
+                if mkp == 'com':
+                    mkp = 'us'
+                elif mkp == 'co.uk':
+                    mkp = 'uk'
+                elif mkp == 'co.jp':
+                    mkp = 'jp'
+
+                pd_info = Amazon.query.filter_by(asin=asin, market=mkp, operation='get_cart').all()
+                if not pd_info:
+                    add_good = Amazon(asin=asin, goods_name=goods_name, market=mkp, url=simple_url,
+                                      spider_time=time.strftime('%Y-%m-%d', time.localtime()),
+                                      user_id=g.user.user_id, operation='get_cart')
+                    db.session.add(add_good)
+                    db.session.commit()  # 后续还需要加入时间字段进来
+
+                else:
+                    add_msg[0]['msg'] = '添加失败，产品已在列表中'
+                return render_template('single_product/get_cart.html', user=g.user, add_msg=add_msg)
+            else:
+                add_msg[0]['msg'] = '添加失败，请检查填入的链接是否正确'
+            return render_template('single_product/get_cart.html', user=g.user, add_msg=add_msg)
+        else:
+            add_msg[0]['msg'] = '添加失败，请输入产品链接'
+            return render_template('single_product/get_cart.html', user=g.user, add_msg=add_msg)
+    job('hh')
+    add_job('hhh')
+    return render_template('single_product/get_cart.html', user=g.user.user_id)
+
+
+def add_job(asin):
+    global schedule
+    schedule.add_job(job,'interval',seconds=5,args=[asin])
+
+
+def job(asin): #抓取购物车的函数
+    print(asin)

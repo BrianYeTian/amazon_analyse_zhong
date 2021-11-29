@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Gramos - 监控购物车</title>
+
+    <!-- begin::global styles -->
+    <link rel="stylesheet" href="../../static/assets/vendors/bundle.css" type="text/css">
+    <!-- end::global styles -->
+
+    <!-- begin::datepicker -->
+    <link rel="stylesheet" href="../../static/assets/vendors/datepicker/daterangepicker.css">
+    <!-- begin::datepicker -->
+
+    <!-- begin::vmap -->
+    <link rel="stylesheet" href="../../static/assets/vendors/vmap/jqvmap.min.css">
+    <!-- begin::vmap -->
+
+    <!-- begin::custom styles -->
+    <link rel="stylesheet" href="../../static/assets/css/app.css" type="text/css">
+    <link rel="stylesheet" href="../../static/assets/css/custom.css" type="text/css">
+    <!-- end::custom styles -->
+
+</head>
+<body>
+
+<!-- end::sidebar -->
+
+<!-- begin::side menu -->
+<div class="side-menu">
+    <div class='side-menu-body'>
+        <ul>
+            <li class="side-menu-divider">Navigation</li>
+            <li>
+                <a href="#"><i class="icon ti-home"></i> <span>首 页</span> </a>
+                <ul>
+                    <li><a href="{{ url_for('user_bp.index') }}">任务预览</a></li>
+                    {#                    <li><a href="dashboard-two.html">Website Statistics</a></li>#}
+                    {#                    <li><a href="dashboard-three.html">Alternative</a></li>#}
+                </ul>
+            </li>
+            {#            <li><a href="widgets.html"><i class="icon ti-paint-bucket"></i> <span>Widgets</span> <span#}
+            {#                    class="badge bg-danger-gradient">8+</span> </a></li>#}
+            <li>
+                <a data-attr="layout-builder-toggle" href="#">
+                    <i class="icon ti-layout"></i>
+                    <span>搜索排名监控</span>
+                </a>
+                <ul>
+                    <li>
+                        <a href="#">Menu</a>
+                        <ul>
+                            <li><a href="layout-horizontal-menu.html">Horizontal</a></li>
+                            <li><a href="layout-icon-menu.html">Icon</a></li>
+                            <li><a href="layout-dark-menu.html">Dark</a></li>
+                            <li><a href="layout-hidden-menu.html">Hidden</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="layout-container.html">Container</a></li>
+                    <li><a href="layout-dark.html">Dark</a></li>
+                    <li>
+                        <a href="#">Other</a>
+                        <ul>
+                            <li><a href="layout-1.html">Layout 1</a></li>
+                            <li><a href="layout-2.html">Layout 2</a></li>
+                            <li><a href="layout-3.html">Layout 3</a></li>
+                            <li><a href="layout-4.html">Layout 4</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li><a href="#"><i class="icon ti-rocket"></i> <span>类 目</span> </a>
+                <ul>
+                    <li><a href="chat.html">Chat </a></li>
+                    <li><a href="#">Email </a>
+                        <ul>
+                            <li><a href="inbox.html">Inbox </a></li>
+                            <li><a href="read-email.html">Email Read </a></li>
+                            <li><a href="compose-email.html">Compose </a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#">Calendar </a>
+                        <ul>
+                            <li><a href="calendar-basic.html">Basic Calendar </a></li>
+                            <li><a href="external-dragging.html">External Dragging </a></li>
+                            <li><a href="calendar-list.html">Calendar List </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li><a href="#"><i class="icon ti-layers-alt"></i> <span>关键词查询</span> </a>
+                <ul>
+                    <li><a href="alerts.html">关键词查ASIN </a></li>
+                    <li><a href="badge.html">ASIN反查关键词 </a></li>
+{#                    <li><a href="buttons.html">Buttons </a></li>#}
+{#                    <li><a href="pagination.html">Pagination </a></li>#}
+{#                    <li><a href="dropdown.html">Dropdown </a></li>#}
+{#                    <li><a href="accordion.html">Accordion </a></li>#}
+{#                    <li><a href="colors.html">Colors </a></li>#}
+{#                    <li><a href="carousel.html">Carousel </a></li>#}
+{#                    <li><a href="tables.html">Tables </a>#}
+                </ul>
+            </li>
+            <li class="open"><a href="#"><i class="icon ti-paint-roller"></i> <span>单品数据</span> </a>
+                <ul>
+                    <li><a href="{{ url_for('sp_bp.add') }}" style=''> 添加产品</a></li>
+                    <li><a href="{{ url_for('sp_bp.dp') }}"> 销量跟踪</a></li>
+                    <li><a href="toast.html">销量查询 </a></li>
+                    <li><a class="active" href="{{ 'sp_bp.get_cart' }}">监控购物车 </a></li>
+                    <li><a href="tour.html">评价抓取 </a></li>
+                    <li><a href="swiper.html">评价分析 </a></li>
+                    <li><a href="tree-view.html">搜索排名监控 </a></li>
+                    <li><a href="tree-view.html">搜索排名查看 </a></li>
+                </ul>
+            </li>
+            <li><a href="#"><i class="icon ti-clipboard"></i> <span>广告分析</span> </a>
+                <ul>
+                    <li><a href="basic-form.html">Basic Form </a></li>
+                    <li><a href="custom-form.html">Custom Form </a></li>
+                    <li><a href="advanced-form.html">Advanced Form </a></li>
+                    <li><a href="datepicker.html">Datepicker </a></li>
+                    <li><a href="timepicker.html">Timepicker </a></li>
+                    <li><a href="colorpicker.html">Colorpicker </a></li>
+                    <li><a href="form-validation.html">Form Validation </a></li>
+                    <li><a href="form-wizard.html">Form Wizard </a></li>
+                    <li><a href="file-upload.html">File Upload </a></li>
+                    <li><a href="#">CKEditor </a>
+                        <ul>
+                            <li><a href="ckeditor-article.html">Article Editor </a></li>
+                            <li><a href="ckeditor-inline.html">Inline Editor </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            {#            <li><a href="icons.html"><i class="icon ti-crown"></i> <span>广告分析</span> </a></li>#}
+            <li>
+                <a href="#">
+                    <i class="icon ti-map"></i>
+                    <span>产品关联购买</span>
+                </a>
+                <ul>
+                    <li><a href="google-map.html">Google</a></li>
+                    <li><a href="vector-map.html">Vector</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="icon ti-pie-chart"></i>
+                    <span>关于作者</span>
+                </a>
+                <ul>
+                    <li><a href="chart-chartjs.html">Chartjs</a></li>
+                    <li><a href="chart-justgage.html">Justgage</a></li>
+                    <li><a href="chart-peity.html">Peity</a></li>
+                </ul>
+            </li>
+            <li><a href="#"><i class="icon ti-face-smile"></i> <span>投诉与建议</span> </a>
+                <ul>
+                    <li><a href="login.html">投诉 </a></li>
+                    <li><a href="register.html">建议 </a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- end::side menu -->
+
+<!-- begin::navbar -->
+<nav class="navbar">
+    <div class="container-fluid">
+
+        <div class="header-logo">
+            <a href="#">
+                <img src="../../static/assets/media/image/light-logo.png" alt="...">
+                <span class="logo-text d-none d-lg-block">一个神奇的网站</span>
+            </a>
+        </div>
+
+        <div class="header-body">
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown d-none d-lg-block">
+                    <a href="#" class="nav-link" data-toggle="dropdown">
+                        <i class="fa fa-th-large"></i>
+                    </a>
+                </li>
+            </ul>
+            <form class="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search ..."
+                           aria-label="Recipient's username"
+                           aria-describedby="button-addon2">
+                    <div class="input-group-append">
+                        <button class="btn" type="button" id="button-addon2">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="#" class="d-lg-none d-sm-block nav-link search-panel-open">
+                        <i class="fa fa-search"></i>
+                    </a>
+                </li>
+                <li class="nav-item" style="margin-top: 5px;margin-right: 20px">
+                    <h2 class="text-uppercase font-size-12 m-b-0" style="color: whitesmoke">Messages</h2>
+                    <!--需要换成用户名-->
+                    <small class="font-size-16">welcome!</small>
+                </li>
+                <li class="nav-item dropdown">
+                    <a href="#" data-toggle="dropdown">
+                        <figure class="avatar avatar-sm avatar-state-success">
+                            <img class="rounded-circle" src="../static/assets/media/image/avatar.jpg" alt="...">
+                        </figure>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <!--                        <a href="profile.html" class="dropdown-item">Profile</a>-->
+                        <!--                        <a href="#" data-sidebar-target="#settings" class="sidebar-open dropdown-item">Settings</a>-->
+                        <div class="dropdown-divider"></div>
+                        <a href="{{ url_for('user_bp.logout') }}" class="text-danger dropdown-item">Logout</a>
+                    </div>
+                </li>
+                <li class="nav-item d-lg-none d-sm-block">
+                    <a href="#" class="nav-link side-menu-open">
+                        <i class="ti-menu"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</nav>
+
+<main class="main-content">
+
+    <div class="container-fluid">
+
+        <!-- begin::page header -->
+        <div class="page-header d-md-flex justify-content-between align-items-center">
+            <h4>监 控 购 物 车</h4>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb m-t-0">
+                    <li class="breadcrumb-item"><a href="#">单品数据</a></li>
+                    {#                    <li class="breadcrumb-item"><a href="#">Forms</a></li>#}
+                    <li class="breadcrumb-item active" aria-current="page">监控购物车</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    <!-- end::page header -->
+
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">产品链接</h5>
+                    <form action="{{ url_for('sp_bp.get_cart') }}" method="post" id="form1">
+                        <div class="form-group">
+                            <label for="exampleFormControlInput1">请输入正确的链接，无效的链接将不会被抓取</label>
+                            <input type="text" class="form-control" name="pd_url" placeholder="商品链接..."
+                                   id="pd_url" style="width: 500px">
+                        </div>
+                        <button type="submit" class="btn btn-outline-warning" id="putdata">提 交 上 传</button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- end::main content -->
+
+<!-- begin::global scripts -->
+<script src="../../static/assets/vendors/bundle.js"></script>
+<!-- end::global scripts -->
+
+<!-- begin::custom scripts -->
+<script src="../../static/assets/js/custom.js"></script>
+<script src="../../static/assets/js/app.js"></script>
+<!-- end::custom scripts -->
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="/static/js/xlsx.core.min.js"></script>
+
+
+
+{% if add_msg %}
+    <div class="hidden" id="msg" name="msg">{{ add_msg[0].msg }}</div>
+    <script language="javascript">
+        window.onload = function () {
+            var obj = document.getElementById("msg").innerHTML;
+            $(function fun() {
+                alert(obj);
+            })
+        }
+
+    </script>
+{% endif %}
+
+</body>
+</html>
