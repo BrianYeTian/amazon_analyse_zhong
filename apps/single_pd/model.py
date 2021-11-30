@@ -13,7 +13,9 @@ class Amazon(db.Model):
     # brand = db.Column(db.String(20), nullable=False)
     # release_date = db.Column(db.DateTime, default='')
     url = db.Column(db.String(500), nullable=False)
-    operation = db.Column(db.String(100),default="")
+    limit = db.Column(db.String(10), default="N")
+    isdelete = db.Column(db.String(10), default='N')
+    operation = db.Column(db.String(100),default=None)
     spider_time = db.Column(db.String(10), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('tb_user.user_id'), nullable=False)
     user = db.relationship('User', backref='pd_info')
@@ -56,3 +58,15 @@ class Trace_pd_info(db.Model):
     pd_info = db.relationship('Amazon', backref='trace_pd')
     market = db.Column(db.String(10), nullable=False)
 
+class Cart(db.Model):
+    __tablename__="cart"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    asin = db.Column(db.String(10), nullable=False)
+    price = db.Column(db.String(10))
+    market = db.Column(db.String(10), nullable=False)
+    update_date = db.Column(db.DateTime, default=datetime.now)
+    seller = db.Column(db.String(100))
+    ship=db.Column(db.String(100))
+    pd_info_id = db.Column(db.ForeignKey('product_info.product_id'))
+    pd_info = db.relationship('Amazon', backref='get_cart')
+    user_id = db.Column(db.ForeignKey('tb_user.user_id'))

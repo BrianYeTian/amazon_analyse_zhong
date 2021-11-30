@@ -25,7 +25,10 @@
 
 </head>
 <body>
-
+<div class="page-loader">
+    <div class="spinner-border"></div>
+    <span>Loading ...</span>
+</div>
 <!-- end::sidebar -->
 
 <!-- begin::side menu -->
@@ -132,8 +135,9 @@
             <li><a href="#"><i class="icon ti-paint-roller"></i> <span>单品数据</span> </a>
                 <ul>
                     <li><a href="{{ url_for('sp_bp.add') }}" style=''> 添加产品</a></li>
-                    <li><a href="lightbox.html"> 销量跟踪</a></li>
+                    <li><a href="{{ url_for('sp_bp.dp') }}"> 销量跟踪</a></li>
                     <li><a href="toast.html">销量查询 </a></li>
+                    <li><a href="{{ url_for('sp_bp.get_cart') }}">监控购物车 </a></li>
                     <li><a href="tour.html">评价抓取 </a></li>
                     <li><a href="swiper.html">评价分析 </a></li>
                     <li><a href="tree-view.html">搜索排名监控 </a></li>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="dataSourceStorageLocal">
+  <component name="dataSourceStorageLocal" created-in="PY-211.7142.13">
     <data-source name="amazon@localhost" uuid="dea02352-d61c-4651-b854-630fc7871c54">
       <database-info product="MySQL" version="8.0.26" jdbc-version="4.2" driver-name="MySQL Connector/J" driver-version="mysql-connector-java-8.0.15 (Revision: 79a4336f140499bd22dd07f02b708e163844e3d5)" dbms="MYSQL" exact-version="8.0.26" exact-driver-version="8.0">
         <extra-name-characters>#@</extra-name-characters>

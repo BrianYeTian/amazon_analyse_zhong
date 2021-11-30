@@ -14,6 +14,26 @@
     <link rel="stylesheet" href="../../static/assets/vendors/dataTable/responsive.bootstrap.min.css" type="text/css">
     <!-- end::dataTable -->
 
+    <!-- begin::select2 -->
+    <link rel="stylesheet" href="../../static/assets/vendors/select2/css/select2.min.css" type="text/css">
+    <!-- end::select2 -->
+
+    <!-- begin::datepicker -->
+    <link rel="stylesheet" href="../../static/assets/vendors/datepicker/daterangepicker.css">
+    <!-- begin::datepicker -->
+
+    <!-- begin::vmap -->
+    <link rel="stylesheet" href="../../static/assets/vendors/vmap/jqvmap.min.css">
+    <!-- begin::vmap -->
+
+    <!-- begin::range slider -->
+    <link rel="stylesheet" href="../../static/assets/vendors/range-slider/css/ion.rangeSlider.min.css" type="text/css">
+    <!-- end::range slider -->
+
+    <!-- begin::tagsinput -->
+    <link rel="stylesheet" href="../../static/assets/vendors/tagsinput/bootstrap-tagsinput.css" type="text/css">
+    <!-- end::tagsinput -->
+
     <!-- begin::custom styles -->
     <link rel="stylesheet" href="../../static/assets/css/app.css" type="text/css">
     <link rel="stylesheet" href="../../static/assets/css/custom.css" type="text/css">
@@ -110,6 +130,7 @@
                     <li><a href="{{ url_for('sp_bp.add') }}" style=''> 添加产品</a></li>
                     <li><a class="active" href="{{ url_for('sp_bp.dp') }}"> 销量跟踪</a></li>
                     <li><a href="toast.html">销量查询 </a></li>
+                    <li><a href="{{ url_for('sp_bp.get_cart') }}">监控购物车 </a></li>
                     <li><a href="tour.html">评价抓取 </a></li>
                     <li><a href="swiper.html">评价分析 </a></li>
                     <li><a href="tree-view.html">搜索排名监控 </a></li>
@@ -163,33 +184,6 @@
                     <li><a href="register.html">建议 </a></li>
                 </ul>
             </li>
-            {#            <li><a href="#"><i class="icon ti-files"></i> <span>Pages</span> </a>#}
-            {#                <ul>#}
-            {#                    <li><a href="profile.html">Profile </a></li>#}
-            {#                    <li><a href="timeline.html">Timeline </a></li>#}
-            {#                    <li><a href="invoice.html">Invoice </a></li>#}
-            {#                    <li><a href="pricing-table.html">Pricing Table </a></li>#}
-            {#                    <li><a href="search-result.html">Search Result </a></li>#}
-            {#                    <li><a href="blank-page.html">Blank Page V1 </a></li>#}
-            {#                    <li><a href="blank-page-v2.html">Blank Page V2 </a></li>#}
-            {#                    <li><a href="#">Errors </a>#}
-            {#                        <ul>#}
-            {#                            <li><a href="404.html">404 </a></li>#}
-            {#                            <li><a href="404-alternative.html">404 Alternative </a></li>#}
-            {#                            <li><a href="mean-at-work.html">Mean at Work </a></li>#}
-            {#                        </ul>#}
-            {#                    </li>#}
-            {#                </ul>#}
-            {#            </li>#}
-            {#            <li><a href="#"><i class="icon ti-menu"></i> <span>Menu Level</span></a>#}
-            {#                <ul>#}
-            {#                    <li><a href="#">Menu Level </a>#}
-            {#                        <ul>#}
-            {#                            <li><a href="#">Menu Level </a></li>#}
-            {#                        </ul>#}
-            {#                    </li>#}
-            {#                </ul>#}
-            {#            </li>#}
         </ul>
     </div>
 </div>
@@ -240,7 +234,7 @@
                 <li class="nav-item dropdown">
                     <a href="#" data-toggle="dropdown">
                         <figure class="avatar avatar-sm avatar-state-success">
-                            <img class="rounded-circle" src="../static/assets/media/image/avatar.jpg" alt="...">
+                            <img class="rounded-circle" src="../../static/assets/media/image/avatar.jpg" alt="...">
                         </figure>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
@@ -269,17 +263,59 @@
 
         <!-- begin::page header -->
         <div class="page-header d-md-flex justify-content-between align-items-center">
-            <h4>Data Tables</h4>
+            <h4>销量跟踪</h4>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb m-t-0">
-                    <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="#">UI Elements</a></li>
-                    <li class="breadcrumb-item"><a href="#">Tables</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Data Tables</li>
+                    <li class="breadcrumb-item"><a href="#">单品数据</a></li>
+{#                    <li class="breadcrumb-item"><a href="#">UI Elements</a></li>#}
+{#                    <li class="breadcrumb-item"><a href="#">Tables</a></li>#}
+                    <li class="breadcrumb-item active" aria-current="page">销量跟踪</li>
                 </ol>
             </nav>
         </div>
         <!-- end::page header -->
+
+
+
+
+        <div class="card">
+            <div class="card-body">
+{#                            <h5 class="card-title">Select2</h5>#}
+                <div class="form-group" style="">
+                    <input type="button" class="btn btn-outline-danger" value="一键删除" id="deleteLimit">
+                </div>
+                <br>
+
+
+{#                <p>标 签</p>#}
+{#                <div class="form-group" style="width: 400px">#}
+{#                    <select class="js-example-basic-single" id="tag_select">#}
+{##}
+{#                    </select>#}
+{#                </div>#}
+
+                <div class="form-group" style="">
+                    <input type="button" class="btn btn-outline-warning" value="反  选" id="btnCheckedRev"/>
+                    <input type="button" class="btn btn-outline-warning" value="批量爬取" id="btnSubmit"/>
+                </div>
+
+{#                <p style="float: left">市 场</p>#}
+{#                <div class="form-group btn-block" style="width: 400px">#}
+{#                    <select class="js-example-basic-single" multiple id="mkp_select">#}
+{#                        <option></option>#}
+{#                        <option value="de">de</option>#}
+{#                        <option value="us">us</option>#}
+{#                        <option value="uk">uk</option>#}
+{#                        <option value="fr">fr</option>#}
+{#                        <option value="it">it</option>#}
+{#                        <option value="es">es</option>#}
+{#                        <option value="jp">jp</option>#}
+{#                    </select>#}
+{#                </div>#}
+
+            </div>
+        </div>
+
 
         <div class="card">
             <div class="card-body">
@@ -312,12 +348,12 @@
                     </tbody>
                     <tfoot>
                     <tr>
-                        <th><input type="checkbox"></th>
-                        <th>ASIN</th>
-                        <th>市场</th>
-                        <th>标题</th>
-                        <th>操作</th>
-                        <th>备注</th>
+                        <th style="text-align: center"><input type="checkbox"></th>
+                        <th style="text-align: center">ASIN</th>
+                        <th style="text-align: center">市场</th>
+                        <th style="text-align: center">标题</th>
+                        <th style="text-align: center">操作</th>
+                        <th style="text-align: center">备注</th>
                     </tr>
                     </tfoot>
                 </table>
@@ -339,6 +375,38 @@
 <script src="../../static/assets/js/examples/datatable.js"></script>
 <!-- end::dataTable -->
 
+<!-- begin::chart -->
+<script src="../../static/assets/vendors/charts/chartjs/chart.min.js"></script>
+<!--<script src="../static/assets/js/examples/charts/chartjs.js"></script> -->
+<!-- end::chart -->
+
+<!-- begin::select2 -->
+<script src="../../static/assets/vendors/select2/js/select2.min.js"></script>
+<script src="../../static/assets/js/examples/select2.js"></script>
+<!-- end::select2 -->
+
+<!-- begin::daterangepicker -->
+<script src="../../static/assets/vendors/datepicker/daterangepicker.js"></script>
+<!-- end::daterangepicker -->
+
+<!-- begin::dashboard -->
+<script src="../../static/assets/js/examples/dashboard.js"></script>
+<!-- end::dashboard -->
+
+<!-- begin::range slider -->
+<script src="../../static/assets/vendors/range-slider/js/ion.rangeSlider.min.js"></script>
+<script src="../../static/assets/js/examples/range-slider.js"></script>
+<!-- end::range slider -->
+
+<!-- begin::input mask -->
+<script src="../../static/assets/vendors/input-mask/jquery.mask.js"></script>
+<script src="../../static/assets/js/examples/input-mask.js"></script>
+<!-- end::input mask -->
+
+<!-- begin::input mask -->
+<script src="../../static/assets/vendors/tagsinput/bootstrap-tagsinput.js"></script>
+<script src="../../static/assets/js/examples/tagsinput.js"></script>
+
 <!-- begin::custom scripts -->
 <script src="../../static/assets/js/custom.js"></script>
 <script src="../../static/assets/js/app.js"></script>
@@ -358,6 +426,41 @@
     //爬取完成返回状态
     //筛选
     //批量提交
+
+    $("#deleteLimit").click(function (){
+        $.ajax({
+            type:'post',
+            url:'{{url_for("sp_bp.delete_limit")}}',
+            success:function (data){
+                alert(data)
+            }
+        })
+    })
+
+
+
+        function addTable(data) {
+            $.each(JSON.parse(data), function (i, item) {
+                //进行二次遍历json数据
+                $.each(item, function (j, item1) {
+                    console.log(item1.asin)
+                    //向表格中动态添加数据
+                    $("#tbody").append(
+                        "<tr>" +
+                        "<td>" + "<input type='checkbox' name='checkItem' value='" + item1.id + "'>" + "</td>" +
+                        "<td><a href=" + item1.url + " target='_blank'>" + item1.asin + "</a></td>" +
+                        "<td>" + item1.market + "</td>" +
+                        "<td style='text-align: center; max-width: 200px; overflow:hidden; text-overflow: ellipsis; white-space: nowrap'>" + item1.goods_name + "</td>" +
+                        "<td>" + "<a href='javascript:;' onclick=query(" + item1.id + ")>查看 </a>"
+                        + "<a href='javascript:;' onclick=get(" + item1.id + ")>  抓取信息 </a>"
+                        + "<a href='javascript:;' onclick=del(" + item1.id + ")> 删除</a>"
+                        + "</td>" +
+                        "<td>" + "</td>" +
+                        "</tr>"
+                    );
+                });
+            })
+        }
 
 
     $(document).ready(function()
@@ -410,7 +513,7 @@
                     asins:JSON.stringify(idArray)
                 },
                 success: function(result) {
-                    alert('抓取完成，请点击"查看"查询详细信息')
+                    alert('任务添加完成，请稍后查看抓取结果')
                 }
             });
         });
@@ -420,111 +523,3 @@
 
 </body>
 </html>
-
-
-{#<div class="container-fluid">#}
-{#    <div class="row">#}
-{#        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">#}
-{#            <h1 class="page-header" style="text-align: center">产品信息汇总</h1>#}
-{#            <h4 style="margin-left: 2%;margin-top: 10px" id="count_num"></h4>#}
-{##}
-{#            <h4 style="margin-left: 850px;margin-top: -20px"><a href="{{ url_for('sp_bp.add') }}">继续添加产品</a></h4>#}
-{##}
-{#            <div class="filterasin" style="margin-left: 850px;margin-top: 20px">#}
-{#                <form>#}
-{#                    <select name="mkp" id="mkp" style="height:25.5px;">#}
-{#                        <option value="">请选择市场</option>#}
-{#                        <option value="us">us</option>#}
-{#                        <option value="de">de</option>#}
-{#                        <option value="uk">uk</option>#}
-{#                        <option value="fr">fr</option>#}
-{#                        <option value="it">it</option>#}
-{#                        <option value="es">es</option>#}
-{#                        <option value="jp">jp</option>#}
-{#                        <option value="all">all</option>#}
-{#                    </select>#}
-{#                    <input type="submit" value="筛 选" style="margin-left: 25px;width: 100px">#}
-{#                </form>#}
-{#            </div>#}
-{#            <div style="margin-top: -20px; margin-left: 5px">#}
-{#                <input type="button" class="u_button" value="反  选" id="btnCheckedRev"/>#}
-{#                <input type="button" class="u_button" value="批量爬取" id="btnSubmit"/>#}
-{#            </div>#}
-{##}
-{#            <div class="table-responsive">#}
-{#                <table class="table table-striped" id="list-content" style="margin-top: 2.5%;margin-left: 20px">#}
-{#                    <tr>#}
-{#                        <td style="text-align: center"><input type="checkbox" id="checkAll"></td>#}
-{#                        <td style="text-align: center">Asin</td>#}
-{#                        <td style="text-align: center">市场</td>#}
-{#                        <th style="text-align: center">产品名</th>#}
-{#                        <th style="text-align: center">链接</th>#}
-{#                        <th style="text-align: center">添加时间</th>#}
-{#                        <th style="text-align: center">备注</th>#}
-{#                        <th style="text-align: center">操作</th>#}
-{##}
-{#                    </tr>#}
-{##}
-{#                    <tbody id="tbody" class="tbody">#}
-{##}
-{#                    </tbody>#}
-{##}
-{#                </table>#}
-{#                <div class="list-menu" id="list-menu"></div>#}
-{##}
-{#                <style>#}
-{#                    .u_button{#}
-{#                        margin-left: 18px;#}
-{#                        width: 100px;#}
-{#                        margin-top: -80px;#}
-{#                    }#}
-{#                </style>#}
-{#                <div id="page" class="page">#}
-{#                    <table>#}
-{#                        <tbody>#}
-{#                            <tr>#}
-{#                                <td></td>#}
-{#                                <td class="td_body">#}
-{#                                    <ul>#}
-{#                                        <li>#}
-{#                                            <a href="javascript:;" onclick="first_page_click()"><span class="glyphicon glyphicon-backward"></span></a>#}
-{#                                        </li>#}
-{#                                        <li>#}
-{#                                            <a href="javascript:;"  onclick="left_page_click()"><span class="glyphicon glyphicon-step-backward"></span></a>#}
-{#                                        </li>#}
-{#                                        <li>#}
-{#                                            <p id="pno"></p>#}
-{#                                        </li>#}
-{#                                        <li>#}
-{#                                            <p id="all_page"></p>#}
-{#                                        </li>#}
-{#                                        <li>#}
-{#                                            <a href="javascript:;" onclick="right_page_click()"><span class="glyphicon glyphicon-step-forward"></span></a>#}
-{#                                        </li>#}
-{#                                        <li>#}
-{#                                            <a href="javascript:;"  onclick="end_page_click()"><span class="glyphicon glyphicon-forward"></span></a>#}
-{#                                        </li>#}
-{#                                        <li>#}
-{#                                            <select id="jumpPage">#}
-{#                                                <option>10</option>#}
-{#                                                <option>20</option>#}
-{#                                                <option>30</option>#}
-{#                                                <option>all</option>#}
-{#                                            </select>#}
-{#                                        </li>#}
-{#                                    </ul>#}
-{#                                </td>#}
-{#                                <td>#}
-{#                                    <p id="tempStr"></p>#}
-{#                                </td>#}
-{#                            </tr>#}
-{#                        </tbody>#}
-{#                    </table>#}
-{#                </div>#}
-{##}
-{#            </div>#}
-{##}
-{#        </div>#}
-{#    </div>#}
-{#</div>#}
-

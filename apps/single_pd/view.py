@@ -19,6 +19,7 @@ from apps.single_pd.download import write_to_excel
 from apps.single_pd.get_review import get_star_rating
 from apps.single_pd.model import Amazon, Trace_pd_info
 from apps.single_pd.product_info import get_product_info
+from apps.single_pd.spider_cart import spider_cart
 from apps.single_pd.trace_pd import pd_trace
 from apps.user.model import User
 from apps.user.view import user_bp, g
@@ -53,7 +54,7 @@ def dp():
         lst = []
         dics = {}
 
-        pd_lst = Amazon.query.filter_by(user_id=g.user.user_id, operation="").all()
+        pd_lst = Amazon.query.filter_by(user_id=g.user.user_id, isdelete='N', operation=None).all()
         for pd in pd_lst:
             dic = {}
             dic['id'] = pd.product_id
@@ -69,7 +70,7 @@ def dp():
         # print(json.dumps(dics))
         return Response(json.dumps(dics))
     else:
-        pd_lst = Amazon.query.filter_by(user_id=g.user.user_id,operation="").all()
+        pd_lst = Amazon.query.filter_by(user_id=g.user.user_id, isdelete='N', operation=None).all()
         print(len(pd_lst))
         return render_template('single_product/product_page.html', user=g.user, pd_lst=pd_lst)
 
@@ -148,27 +149,17 @@ def add():
                     # 要抓取亚马逊页面信息
                     # brand = get_product_info(url, asin)
 
-                    pd_info = Amazon.query.filter_by(asin=asin, market=mkp, operation="").all()
+                    pd_info = Amazon.query.filter_by(asin=asin, market=mkp, isdelete="N", operation=None).all()
                     if not pd_info:
                         add_good = Amazon(asin=asin, goods_name=goods_name, market=mkp, url=simple_url,
                                           spider_time=time.strftime('%Y-%m-%d', time.localtime()),
-                                          user_id=g.user.user_id)
+                                          user_id=g.user.user_id,limit="N")
                         db.session.add(add_good)
                         db.session.commit()
                         # print('添加1')
 
                     else:
-                        for pd in pd_info:
-                            if pd.market != mkp:
-                                add_good = Amazon(asin=asin, goods_name=goods_name, market=mkp, url=simple_url,
-                                                  spider_time=time.strftime('%Y-%m-%d', time.localtime()),
-                                                  user_id=g.user.user_id)
-                                db.session.add(add_good)
-                                db.session.commit()
-                                # print('添加2')
-                            else:
-                                print('-------------')
-                                add_msg[0]['msg'] = '添加失败，产品已在列表中'
+                        add_msg[0]['msg'] = '添加失败，产品已在列表中'
                     return render_template('single_product/add_product.html', user=g.user, add_msg=add_msg)
                 else:
                     add_msg[0]['msg'] = '添加失败，请检查填入的链接是否正确'  # 这个地方还有问题，实际上添加成功了，但是提示的是这句话
@@ -230,12 +221,12 @@ def add_by_sheet():
                 # 要抓取亚马逊页面信息
                 # brand = get_product_info(url, asin)
 
-                pd_info = Amazon.query.filter_by(asin=asin, market=mkp).all()
+                pd_info = Amazon.query.filter_by(asin=asin, market=mkp,isdelete="N", operation=None).all()
                 # print('hier')
                 if not pd_info:
                     add_good = Amazon(asin=asin, goods_name=goods_name, market=mkp, url=simple_url,
                                       spider_time=time.strftime('%Y-%m-%d', time.localtime()),
-                                      user_id=g.user.user_id)
+                                      user_id=g.user.user_id,limit="N")
                     db.session.add(add_good)
                     db.session.commit()
                     i += 1
@@ -246,18 +237,11 @@ def add_by_sheet():
                         if pd.market != mkp and pd.user_id != g.user.user_id and pd.asin != asin:
                             add_good = Amazon(asin=asin, goods_name=goods_name, market=mkp, url=simple_url,
                                               spider_time=time.strftime('%Y-%m-%d', time.localtime()),
-                                              user_id=g.user.user_id)
+                                              user_id=g.user.user_id,limit="N")
                             db.session.add(add_good)
                             db.session.commit()
                             i += 1
-                            # print('添加2')
-                        # else:
-                        #     print('-------------')
-                        #     add_msg[0]['msg'] = '添加失败，产品已在列表中'
-        #         return render_template('single_product/add_product.html', user=g.user, add_msg=add_msg)
-        #     else:
-        #         add_msg[0]['msg'] = '添加失败，请检查填入的链接是否正确'  # 这个地方还有问题，实际上添加成功了，但是提示的是这句话
-        # return render_template('single_product/add_product.html', user=g.user, add_msg=add_msg)
+
         msg = '批量添加完成，成功添加' + str(i) + '个' + ';添加失败' + str(len(urls) - i) + '个'
         return Response(json.dumps(msg))
 
@@ -293,42 +277,14 @@ def trace_pds():
         mkp_url_list.append(di)
         asin_list.append(pd_info.asin)
 
-    # executor.submit(write_to_db, mkp_url_list, asin_list)
-    write_to_db(mkp_url_list, asin_list)
-    pd_lst = Amazon.query.filter_by(user_id=g.user.user_id).all()  # 备注
+    executor.submit(write_to_db, mkp_url_list, asin_list, g.user.user_id)
+    # write_to_db(mkp_url_list, asin_list)
+    pd_lst = Amazon.query.filter_by(user_id=g.user.user_id, limit='N').all()  # 备注
     return render_template('single_product/product_page.html', user=g.user, pd_lst=pd_lst)
 
 
-def get_pds_info(mkp_url_list, asin_list):
-    get_pd_infos = EU_trace_pd(mkp_url_list, asin_list)
-
-    return get_pd_infos
-    # 传回来的值是一个包含多个产品信息的列表，需要再修改
-
-
-def write_to_db(mkp_url_list, asin_list):
-    get_pd_infos = get_pds_info(mkp_url_list, asin_list)
-    print(get_pd_infos)
-
-    for get_pd_info in get_pd_infos:
-        print(get_pd_info)
-        print('到这里了1')
-
-        pd_infos = Amazon.query.filter_by(asin=get_pd_info[6],
-                                          market=get_pd_info[8]).first()  # 结合每个ASIN和市场在信息表里面查询到对应的id
-        print('到这里了2')
-        write_pd = Trace_pd_info(asin=get_pd_info[6], price=get_pd_info[0], rating_num=get_pd_info[1],
-                                 rating=get_pd_info[2], cate=get_pd_info[3], rank=get_pd_info[4],
-                                 inventory=get_pd_info[5], pd_info_id=pd_infos.product_id, user_id=g.user.user_id,
-                                 market=get_pd_info[8])
-        print(write_pd)
-        db.session.add(write_pd)
-        db.session.commit()
-        print('数据更新成功')
-
-        if pd_infos.goods_name == '':
-            pd_infos.goods_name = get_pd_info[7]
-            db.session.commit()
+def write_to_db(mkp_url_list, asin_list, user_id):
+    EU_trace_pd(mkp_url_list, asin_list, user_id)
 
 
 @sp_bp.route('/query', methods=['GET', 'POST'])
@@ -507,6 +463,22 @@ def get_asins_chart():
             return Response(json.dumps([{'msg': '无查询结果'}]))
 
 
+@sp_bp.route('/delete_limit', methods=['POST'])
+def delete_limit():
+    if request.method == 'POST':
+        # pd_id=[]
+        pd_lst = Amazon.query.filter_by(user_id=g.user.user_id, limit='Y',operation=None).all()
+        if pd_lst:
+            for pd in pd_lst:
+                # pd_id.append(pd.product_id)
+                # db.session.delete(pd)
+                # db.session.commit()
+                pd.isdelete = 'Y'
+                db.session.commit()
+
+        return Response('共删除' + str(len(pd_lst)) + '个'), redirect(url_for('sp_bp.dp'))
+
+
 @sp_bp.route('/get_cart', methods=['GET', 'POST'])
 def get_cart():
     if request.method == 'POST':
@@ -539,13 +511,17 @@ def get_cart():
                 elif mkp == 'co.jp':
                     mkp = 'jp'
 
-                pd_info = Amazon.query.filter_by(asin=asin, market=mkp, operation='get_cart').all()
+                pd_info = Amazon.query.filter_by(asin=asin, market=mkp, operation='get_cart',user_id=g.user.user_id).all()
                 if not pd_info:
                     add_good = Amazon(asin=asin, goods_name=goods_name, market=mkp, url=simple_url,
                                       spider_time=time.strftime('%Y-%m-%d', time.localtime()),
                                       user_id=g.user.user_id, operation='get_cart')
                     db.session.add(add_good)
                     db.session.commit()  # 后续还需要加入时间字段进来
+
+                    executor.submit(job,asin,simple_url,mkp,g.user.user_id)
+                    # job(asin,simple_url,mkp,g.user.user_id)
+                    add_job(asin,simple_url,mkp,g.user.user_id)
 
                 else:
                     add_msg[0]['msg'] = '添加失败，产品已在列表中'
@@ -556,15 +532,13 @@ def get_cart():
         else:
             add_msg[0]['msg'] = '添加失败，请输入产品链接'
             return render_template('single_product/get_cart.html', user=g.user, add_msg=add_msg)
-    job('hh')
-    add_job('hhh')
     return render_template('single_product/get_cart.html', user=g.user.user_id)
 
 
-def add_job(asin):
+def add_job(asin,simple_url,mkp,user_id):
     global schedule
-    schedule.add_job(job,'interval',seconds=5,args=[asin])
+    schedule.add_job(job,'interval',hours=1,args=[asin,simple_url,mkp,user_id],id=asin)
 
 
-def job(asin): #抓取购物车的函数
-    print(asin)
+def job(asin,url,mkp,user_id): #抓取购物车的函数
+    spider_cart(asin,url,mkp,user_id)
