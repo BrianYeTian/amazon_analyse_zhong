@@ -1,6 +1,6 @@
 class Config:
     # SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:root@localhost:3306/amazon'
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:gaosan10302@localhost:3306/amazon'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:root@localhost:3306/amazon5'
     DEBUG = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = 'sdiufbiosdbfiouvah389y534u25890u23o8rjo'
